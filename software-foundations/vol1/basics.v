@@ -92,26 +92,43 @@ Proof.
 
 
 Theorem plus_0_n: forall n: nat, n + 0 = n.
-    Proof. Admitted.
+    Proof. 
+      induction n.
+      - reflexivity.
+      - simpl. rewrite -> IHn. reflexivity.  
+      Qed.
 
 Theorem mult_n_0: forall n: nat, n*0 = 0.
-    Proof. intros n. symmetry. Admitted. 
+    Proof. 
+      induction n.
+      - reflexivity.
+      - simpl. rewrite -> IHn. reflexivity.
+      Qed.
+
+Theorem mult_n_1: forall n: nat, n*1 = n.
+    Proof. 
+      induction n.
+      - reflexivity.
+      - simpl. rewrite -> IHn. reflexivity.
+      Qed.
+
+Theorem plus_1: forall n: nat, n + 1 = S n.
+Proof. induction n.
+  - reflexivity.
+  - simpl. rewrite -> IHn. reflexivity.
+  Qed. 
 
 Theorem mult_n_Sm: forall n m: nat, n*S m = n + n*m.
-    Proof. 
-    intros n m.
-    Admitted.
- 
-Theorem mult_n_1 : forall p : nat,
-  p * 1 = p.
-Proof.
-  intros p.
-  rewrite -> mult_n_Sm.
-  rewrite -> mult_n_0.
-  rewrite -> plus_0_n.
-  reflexivity.
-Qed.
-
+    Proof.
+    intros m n. 
+    induction m.
+    - reflexivity.
+    - induction n.
+    + simpl. 
+      rewrite <- IHm.
+      rewrite -> mult_n_1.
+      reflexivity.
+    + Admitted.
 
 Theorem andb_true_elim2 : forall b c : bool,
  andb b c = true -> c = true.
