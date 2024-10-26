@@ -156,28 +156,6 @@ Theorem eq_S : forall m n : nat, S n = S m -> n = m.
      rewrite <- add_comm.
   Admitted.
 
-Theorem mult_n_Sm: forall n m: nat, n*S m = n + n*m.
-    Proof.
-    intros m n. 
-    induction m.
-    - reflexivity.
-    - simpl.
-      rewrite <- add_comm.
-      rewrite -> plus_n_Sm.
-      rewrite -> IHm.
-      rewrite -> plus_n_Sm.
-      symmetry.
-      rewrite -> add_comm.
-      rewrite <- add_assoc.
-      rewrite <- add_comm.
-      symmetry.
-      rewrite <- plus_n_Sm.
-      rewrite <- add_comm.
-      symmetry.
-      rewrite <- add_comm.
-      simpl. 
-      Admitted.
-      
 
 Theorem andb_true_elim2 : forall b c : bool,
  andb b c = true -> c = true.
