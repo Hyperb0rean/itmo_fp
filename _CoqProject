@@ -1,0 +1,4 @@
+-Q ./software-foundations/lf/ LF
+
+./software-foundations/lf/basics.v
+./software-foundations/lf/induction.v
