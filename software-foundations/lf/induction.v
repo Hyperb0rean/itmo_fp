@@ -1,2 +1,1 @@
-
-(* From LF Require Export basics. *)
+From LF Require Export basics.
