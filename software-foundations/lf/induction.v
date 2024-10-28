@@ -45,18 +45,32 @@ Proof.
   - rewrite <- H. reflexivity.
   Qed.
 
+Lemma mul_m_Sn: forall m n: nat,
+  m * S n = m * n + m.
+  Proof.
+    intros.
+    induction m.
+    - reflexivity.
+    - simpl.
+      rewrite -> IHm.
+      rewrite -> add_assoc.
+      rewrite -> plus_n_Sm.
+      reflexivity.
+    Qed.
+
 Theorem mul_comm : forall m n : nat,
   m * n = n * m.
-Proof.
+Proof. 
   intros.
-  symmetry.
-  induction n as [ | n' IHn].
+  induction n.
   - rewrite -> mult_n_0. reflexivity.
-  - assert(H_l: S n' * m = n' * m + m).
-  + simpl. 
+  - rewrite -> mul_m_Sn.
+    assert(H: S n * m = m + n * m).
+  + reflexivity.
+  + rewrite -> H.
+    rewrite -> add_comm.
     rewrite -> IHn.
-    rewrite <- add_comm.
     reflexivity.
-  + simpl.
-  Admitted.
+    Qed.
+    
     
