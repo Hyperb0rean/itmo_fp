@@ -2,3 +2,7 @@
 
 ./software-foundations/lf/basics.v
 ./software-foundations/lf/induction.v
+
+-Q ./project-euler PE
+
+./project-euler/largest_palindrome.v
