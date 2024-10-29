@@ -1,3 +1,5 @@
+From LF Require Export basics.
+
 Module Palindrome.
 Inductive num: Type :=
 | Nil
@@ -27,7 +29,7 @@ Notation "7" := Seven.
 Notation "8" := Eight.
 Notation "9" := Nine.
 
-Notation " [ x1 , .. , x2 ] " := (x1 .. ( x2 Nil) .. ).
+Notation " [ x1 , .. , x2 ] " := (x2 .. ( x1 Nil) .. ).
 
 Fixpoint succ (d : num) : num :=
   match d with
@@ -46,7 +48,7 @@ Fixpoint succ (d : num) : num :=
 
 Notation " ++ x1 " := (succ x1) (at level 70).
 
-Example test_succ: ++ [ 1, 2 ] =  [ 2, 2 ].
+Example test_succ: ++ [ 1, 2 ] =  [ 1, 3 ].
 Proof. reflexivity. Qed.
 
 Fixpoint reverse (d d' : num) :=
@@ -86,5 +88,67 @@ Example test_eq_num1: [ 1, 2 ] =? [ 1, 2 ] = true.
 Proof. reflexivity. Qed.
 Example test_eq_num2: [ 1, 2 , 4 ] =? [ 1, 3, 4 ] = false.
 Proof. reflexivity. Qed.
+
+Definition is_palindrom (a : num) := 
+    eq_num a ( reverse a Nil ).
+
+
+Example test_is_palindrom1: is_palindrom [ 1, 2, 1 ] = true.
+Proof. reflexivity. Qed.
+Example test_is_palindrom2: is_palindrom [ 1, 2, 3, 2, 1 ] = true.
+Proof. reflexivity. Qed.
+Example test_is_palindrom3: is_palindrom [ 1, 2, 3, 1 ] = false.
+Proof. reflexivity. Qed.
+
+Fixpoint succ_m (a: num) (m: nat) : num :=
+    match m with
+    | O => a
+    | S m' => (succ_m (succ a) m')
+    end. 
+
+
+Notation " m + a " := (succ_m a m).
+
+Example test_succ_m: 1 + [1, 3, 5] = [1, 3, 6].
+Proof. simpl. reflexivity. Qed.
+Example test_succ_m2: 9 + [1, 3, 5] = [1, 4, 4].
+Proof. simpl. reflexivity. Qed.
+Example test_succ_m3: 19 + [1, 3, 5] = [1, 5, 4].
+Proof. simpl. reflexivity. Qed.
+
+Fixpoint dec_to_nat (a: num) : nat :=
+    match a with
+    | Nil => O
+    | Zero a' => mult 10 (dec_to_nat a')
+    | One a' => (plus 1 (mult 10 (dec_to_nat a')))
+    | Two a' => (plus 2 (mult 10 (dec_to_nat a')))
+    | Three a' => (plus 3 (mult 10 (dec_to_nat a')))
+    | Four a' => (plus 4 (mult 10 (dec_to_nat a')))
+    | Five a' => (plus 5 (mult 10 (dec_to_nat a')))
+    | Six a' => (plus 6 (mult 10 (dec_to_nat a')))
+    | Seven a' => (plus 7 (mult 10 (dec_to_nat a')))
+    | Eight a' => (plus 8 (mult 10 (dec_to_nat a')))
+    | Nine a' => (plus 9 (mult 10 (dec_to_nat a')))
+    end.
+
+Definition mod_10 (a :num) : num :=
+    match a with
+    | Nil => Nil
+    | One _ => (One Nil)
+    | Two _ => (Two Nil)
+    | Three _ => (Three Nil)
+    | Four _ => (Four Nil)
+    | Five _ => (Five Nil)
+    | Six _ => (Six Nil)
+    | Seven _ => (Seven Nil)
+    | Eight _ => (Eight Nil)
+    | Nine _ => (Nine Nil)
+    | Zero _ => (Zero Nil)
+    end.
+
+
+Example test_mod_10: mod_10 [1, 2, 3] = [3].
+Proof. simpl. reflexivity. Qed. 
+
 
 End Palindrome.
