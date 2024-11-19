@@ -1,34 +1,41 @@
 Require Import Coq.Lists.List.
 Require Import Coq.Arith.PeanoNat.
 Require Import Coq.Arith.Wf_nat.
+Require Import Coq.Program.Wf.
 Import ListNotations.
+Require Import Coq.Relations.Relation_Operators.
+Require Extraction.
+Extraction Language OCaml.
+
+
 
 Require Import Wellfounded.
 
-Search lt.
-Search le.
-
-Lemma digits_oblig (n m : nat) (p : n <> 0) (q : m > 1) : n / m < n.
-Proof.
-  apply Nat.div_lt.
-  - destruct n. contradiction. apply Nat.lt_0_succ.
-  - apply q.
-Qed.
-
-Lemma not_null (n: nat) : n<>0.
-Admitted.
-Lemma greater_1 (m: nat) : m > 1.
-Admitted.
-
+Lemma digits_oblig: forall n: nat, (0 <> n)-> (n / 10) < n.
+Proof. 
+intros n H.
+destruct n as [| n'].
+- contradiction H. reflexivity.
+- apply Nat.div_lt.
++ apply Nat.lt_0_succ.
++ do 2 apply Nat.lt_succ_r.
+  apply Nat.le_0_l.
+  Qed.
 
 Definition digits (n : nat) : list nat :=
   Fix (lt_wf) (fun _ => list nat)
-      (fun (n : nat) (digits : forall n', (n' < n) -> list nat) =>
-        match n with
-        | 0 => []
-        | _ => digits (n / 10) (digits_oblig n 10 (not_null n) (greater_1 10))  ++ [n mod 10]
+      (fun (m : nat) (digits : forall n', (n' < m) -> list nat) =>
+        match m, digits with
+        | 0, _ => []
+        | S m', digits => digits ((S m') / 10) (digits_oblig (S m') (Nat.neq_0_succ m')) ++ [m mod 10]
         end) 
-    n.
+    n.  
+
+Example test_digits1: digits 123 = [1; 2; 3].
+Proof. simpl. reflexivity. Qed.
+
+Example test_digits2: digits 54321 = [5; 4; 3; 2; 1].
+Proof. simpl. reflexivity. Qed.
 
 Fixpoint list_beq {A: Type} (eq: A -> A -> bool) (x y : list A) : bool :=
   match x, y with
@@ -39,29 +46,54 @@ Fixpoint list_beq {A: Type} (eq: A -> A -> bool) (x y : list A) : bool :=
       eq h1 h2 && list_beq eq t1 t2  
   end.
 
-Fixpoint eqb (n m : nat) : bool :=
-  match n, m with
-  | O, O => true
-  | O, S _ => false
-  | S _, O => false
-  | S n', S m' => eqb n' m' 
-  end.
-
 Definition is_palindrome (n : nat) : bool :=
   let ds := digits n in
-  list_beq eqb ds (rev ds).
+  list_beq Nat.eqb ds (rev ds).
 
-Fixpoint find_max (i j max_prod upper_limit lower_limit : nat) : nat :=
-max_prod.
+Definition max_palindrom(i j max_prod: nat): nat :=
+let p := i*j in
+if andb (is_palindrome p) (Nat.ltb max_prod p) then p else max_prod.
+
+Program Fixpoint find_max_aux (p : nat * nat)
+  (max_prod upper_limit lower_limit: nat) 
+  {measure p (slexprod _ _ lt lt)} :=
+if Nat.eqb (fst p) lower_limit then max_prod else
+let new_prod := max_palindrom (fst p) (snd p) max_prod in
+match p with  
+| (_, S j') => find_max_aux (fst p, j') new_prod upper_limit lower_limit
+| (S i', 0) => find_max_aux (i', upper_limit) new_prod upper_limit lower_limit
+| (0, 0)   => new_prod 
+end.
+
+Next Obligation.
+Proof.
+  right. unfold lt. reflexivity.
+Qed.
+
+Next Obligation.
+Proof.
+  left. unfold fst. unfold lt. reflexivity.
+Qed.
+
+Next Obligation.
+Proof.
+  apply measure_wf.
+  apply wf_slexprod.
+  - apply lt_wf.
+  - apply lt_wf.
+Qed.
+
+Definition find_max (upper_limit lower_limit : nat) : nat :=
+(find_max_aux (upper_limit, upper_limit) 0 upper_limit lower_limit).
+
 
 Definition largest_palindrome (n : nat) : nat :=
   let upper_limit := (10 ^ n) - 1 in
   let lower_limit := 10 ^ (n - 1) in
-  find_max upper_limit upper_limit 0 upper_limit lower_limit.
+  find_max upper_limit lower_limit.
 
-Compute largest_palindrome 2.
-Example test_2: largest_palindrome 2 = 9009.
-Proof. simpl. reflexivity. Qed.
+Set Extraction Optimize.
 
-Example test_3: largest_palindrome 3 = 906609.
-Proof. simpl. reflexivity. Qed.
+Extraction "largest_palindrome.ml" largest_palindrome.
+
+
