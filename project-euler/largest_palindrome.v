@@ -43,7 +43,7 @@ Fixpoint list_beq {A: Type} (eq: A -> A -> bool) (x y : list A) : bool :=
   | _, [] => false                 
   | [], _ => false                 
   | h1 :: t1, h2 :: t2 =>         
-      eq h1 h2 && list_beq eq t1 t2  
+      andb (eq h1 h2) (list_beq eq t1 t2)  
   end.
 
 Definition is_palindrome (n : nat) : bool :=
@@ -51,18 +51,18 @@ Definition is_palindrome (n : nat) : bool :=
   list_beq Nat.eqb ds (rev ds).
 
 Definition max_palindrom(i j max_prod: nat): nat :=
-let p := i*j in
-if andb (is_palindrome p) (Nat.ltb max_prod p) then p else max_prod.
+  let p := i*j in
+  if andb (is_palindrome p) (Nat.ltb max_prod p) then p else max_prod.
 
 Program Fixpoint find_max_aux (p : nat * nat)
   (max_prod upper_limit lower_limit: nat) 
   {measure p (slexprod _ _ lt lt)} :=
-if Nat.eqb (fst p) lower_limit then max_prod else
-let new_prod := max_palindrom (fst p) (snd p) max_prod in
-match p with  
-| (_, S j') => find_max_aux (fst p, j') new_prod upper_limit lower_limit
-| (S i', 0) => find_max_aux (i', upper_limit) new_prod upper_limit lower_limit
-| (0, 0)   => new_prod 
+  if Nat.eqb (fst p) lower_limit then max_prod else
+    let new_prod := max_palindrom (fst p) (snd p) max_prod in
+    match p with  
+    | (_, S j') => find_max_aux (fst p, j') new_prod upper_limit lower_limit
+    | (S i', 0) => find_max_aux (i', upper_limit) new_prod upper_limit lower_limit
+    | (0, 0)   => new_prod 
 end.
 
 Next Obligation.
@@ -84,7 +84,7 @@ Proof.
 Qed.
 
 Definition find_max (upper_limit lower_limit : nat) : nat :=
-(find_max_aux (upper_limit, upper_limit) 0 upper_limit lower_limit).
+  (find_max_aux (upper_limit, upper_limit) 0 upper_limit lower_limit). 
 
 
 Definition largest_palindrome (n : nat) : nat :=
@@ -99,3 +99,5 @@ Set Extraction Optimize.
 Set Extraction Output Directory "lib".
 
 Extraction "largest_palindrome.ml" ProjectEuler.largest_palindrome.
+
+ 
