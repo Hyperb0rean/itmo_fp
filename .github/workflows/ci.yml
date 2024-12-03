@@ -40,6 +40,6 @@ jobs:
 
       - run: opam install base stdio dune coq -y
       - run: opam exec -- coq_makefile -f _CoqProject -o CoqMakefile
-      - run: make -f CoqMakefile -j 7
+      - run: source ~/.bashrc && make -f CoqMakefile -j 7
       - run: opam exec -- dune build -j 7
       - run: opam exec -- dune test -f --verbose
