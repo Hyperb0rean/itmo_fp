@@ -1,0 +1,3 @@
+[submodule "vstyle-tools"]
+	path = vstyle-tools
+	url = git@github.com:appliedfm/vstyle-tools.git
