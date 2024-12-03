@@ -32,7 +32,6 @@ jobs:
 
       - name: Install dependencies
         run: opam install base stdio dune coq -y && \
-         eval $(opam env) && \
          opam exec -- coq_makefile -f _CoqProject -o CoqMakefile && \
          make -f CoqMakefile && \
          opam exec -- dune build && \
