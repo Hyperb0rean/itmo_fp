@@ -1,40 +1,37 @@
 name: CI
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  - push
+  - pull_request
 
 permissions: read-all
 
 jobs:
-  install:
+  build-and-test:
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
+
+    strategy:
+      fail-fast: false
+
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout tree
         uses: actions/checkout@v4
 
-      - name: Set up OCaml
+      - name: Set-up OCaml
         uses: ocaml/setup-ocaml@v3
         with:
           ocaml-compiler: 5.1.1
 
-      - name: Cache OPAM packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.opam/
-            ~/.opam/*/switch/
-          key: ${{ runner.os }}-opam-${{ hashFiles('**/*.opam') }}
-          restore-keys: |
-            ${{ runner.os }}-opam-
+      # - run: opam install . --deps-only --with-test
+      - run: opam install base stdio dune -y
 
-      - name: Install dependencies
-        run: opam install base stdio dune -y && \
-         eval $(opam env) && \
-         opam exec -- dune build && \
-         opam exec -- dune test -f --verbose
+      - run: opam exec -- dune build
+      - run: opam exec -- dune runtest --verbose
      
          
   #  opam exec -- coq_makefile -f _CoqProject -o CoqMakefile && \
