@@ -54,7 +54,7 @@ jobs:
             ${{ runner.os }}-dune-
 
       - name: Build Coq files
-        run: coq_makefile -f _CoqProject -o CoqMakefile && make -f CoqMakefile
+        run: eval $(opam env) && coq_makefile -f _CoqProject -o CoqMakefile && make -f CoqMakefile
 
       - name: Build OCaml project with Dune
         run: opam exec -- dune build
