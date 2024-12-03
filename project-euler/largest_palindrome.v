@@ -4,12 +4,12 @@ Require Import Coq.Arith.Wf_nat.
 Require Import Coq.Program.Wf.
 Import ListNotations.
 Require Import Coq.Relations.Relation_Operators.
+Require Import Wellfounded.
+
 Require Extraction.
 Extraction Language OCaml.
 
-
-
-Require Import Wellfounded.
+Module ProjectEuler.
 
 Lemma digits_oblig: forall n: nat, (0 <> n)-> (n / 10) < n.
 Proof. 
@@ -92,8 +92,10 @@ Definition largest_palindrome (n : nat) : nat :=
   let lower_limit := 10 ^ (n - 1) in
   find_max upper_limit lower_limit.
 
+End ProjectEuler.
+
 Set Extraction Optimize.
 
-Extraction "largest_palindrome.ml" largest_palindrome.
+Set Extraction Output Directory "lib".
 
-
+Extraction "largest_palindrome.ml" ProjectEuler.largest_palindrome.

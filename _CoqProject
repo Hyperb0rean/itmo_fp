@@ -6,4 +6,3 @@
 -Q ./project-euler PE
 
 ./project-euler/largest_palindrome.v
-./project-euler/largest_palindrome_dec.v
