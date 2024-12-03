@@ -1,8 +1,5 @@
--Q ./software-foundations/lf/ LF
-
-./software-foundations/lf/basics.v
-./software-foundations/lf/induction.v
-
 -Q ./project-euler PE
 
 ./project-euler/largest_palindrome.v
+./project-euler/largest_prime_factor.v
+
