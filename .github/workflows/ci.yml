@@ -31,12 +31,13 @@ jobs:
             ${{ runner.os }}-opam-
 
       - name: Install dependencies
-        run: opam install base stdio dune coq -y && \
-         opam exec -- coq_makefile -f _CoqProject -o CoqMakefile && \
-         make -f CoqMakefile && \
+        run: opam install base stdio dune -y && \
          opam exec -- dune build && \
          opam exec -- dune test -f --verbose
+     
          
+  #  opam exec -- coq_makefile -f _CoqProject -o CoqMakefile && \
+  #  make -f CoqMakefile && \
 
   # build:
   #   needs: install
