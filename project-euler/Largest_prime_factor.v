@@ -6,8 +6,7 @@ Require Import Coq.Arith.Wf_nat.
 Require Import Coq.Program.Wf.
 Require Import Coq.Relations.Relation_Operators.
 Require Import Wellfounded.
-Require Extraction.
-Extraction Language OCaml.
+
 
 Module ProjectEuler.
 
@@ -76,9 +75,3 @@ Proof.
 Qed.
     
 End ProjectEuler.
-
-Set Extraction Optimize.
-
-Set Extraction Output Directory "lib".
-
-Extraction "largest_prime_factor.ml" ProjectEuler.largest_prime_factor.

@@ -1,5 +1,10 @@
--Q ./project-euler PE
+-Q . Itmo
 
-./project-euler/largest_palindrome.v
-./project-euler/largest_prime_factor.v
+-Q ./project-euler ProjectEuler
 
+./project-euler/Largest_palindrome.v
+./project-euler/Largest_prime_factor.v
+
+-Q ./lib Lib
+
+./lib/Lib.v

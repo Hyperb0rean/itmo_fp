@@ -6,8 +6,8 @@ Import ListNotations.
 Require Import Coq.Relations.Relation_Operators.
 Require Import Wellfounded.
 
-Require Extraction.
-Extraction Language OCaml.
+Print LoadPath.
+
 
 Module ProjectEuler.
 
@@ -93,11 +93,4 @@ Definition largest_palindrome (n : nat) : nat :=
   find_max upper_limit lower_limit.
 
 End ProjectEuler.
-
-Set Extraction Optimize.
-
-Set Extraction Output Directory "lib".
-
-Extraction "largest_palindrome.ml" ProjectEuler.largest_palindrome.
-
  
