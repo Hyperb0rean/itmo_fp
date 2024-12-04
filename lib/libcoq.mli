@@ -58,7 +58,7 @@ module Nat :
 
 val rev : 'a1 list -> 'a1 list
 
-module ProjectEuler :
+module Largest_palindrome :
  sig
   val digits : nat -> nat list
 
@@ -76,4 +76,13 @@ module ProjectEuler :
   val find_max : nat -> nat -> nat
 
   val largest_palindrome : nat -> nat
+ end
+
+module Largest_prime_factor :
+ sig
+  val smallest_factor_aux : nat -> nat -> nat
+
+  val smallest_factor : nat -> nat
+
+  val largest_prime_factor : nat -> nat
  end

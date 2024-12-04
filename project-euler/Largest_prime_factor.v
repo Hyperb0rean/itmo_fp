@@ -8,7 +8,7 @@ Require Import Coq.Relations.Relation_Operators.
 Require Import Wellfounded.
 
 
-Module ProjectEuler.
+Module Largest_prime_factor.
 
 Definition is_prime (n : nat) : Prop :=
   n > 1 /\ forall d, d > 1 -> d < n -> Nat.modulo n d <> 0.
@@ -74,4 +74,4 @@ Proof.
     + apply n0.
 Qed.
     
-End ProjectEuler.
+End Largest_prime_factor.

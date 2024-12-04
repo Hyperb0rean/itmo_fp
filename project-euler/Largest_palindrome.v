@@ -9,7 +9,7 @@ Require Import Wellfounded.
 Print LoadPath.
 
 
-Module ProjectEuler.
+Module Largest_palindrome.
 
 Lemma digits_oblig: forall n: nat, (0 <> n)-> (n / 10) < n.
 Proof. 
@@ -92,5 +92,5 @@ Definition largest_palindrome (n : nat) : nat :=
   let lower_limit := 10 ^ (n - 1) in
   find_max upper_limit lower_limit.
 
-End ProjectEuler.
+End Largest_palindrome.
  
