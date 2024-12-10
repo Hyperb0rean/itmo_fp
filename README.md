@@ -29,7 +29,7 @@
 
 Turned out that calculating of such big number produces stackoverflow, so I fallbacked to smaller ones.
 
-### Lab 1 - Data Structures
+### Lab 2 - Data Structures
 
 
 ### Materials
