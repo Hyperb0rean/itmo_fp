@@ -1,5 +1,7 @@
 Require Import ProjectEuler.Largest_palindrome.
 Require Import ProjectEuler.Largest_prime_factor.
+Require Import DataStructures.Binary_tree.
+
 Require Extraction.
 
 Require Import Arith.

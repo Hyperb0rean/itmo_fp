@@ -58,6 +58,10 @@ module Nat :
 
 val rev : 'a1 list -> 'a1 list
 
+val filter : ('a1 -> bool) -> 'a1 list -> 'a1 list
+
+val seq : nat -> nat -> nat list
+
 module Largest_palindrome :
  sig
   val digits : nat -> nat list
@@ -80,7 +84,9 @@ module Largest_palindrome :
 
 module Largest_prime_factor :
  sig
-  val smallest_factor_aux : nat -> nat -> nat
+  val mod_eq0b : nat -> nat -> bool
+
+  val factors : nat -> nat list
 
   val smallest_factor : nat -> nat
 

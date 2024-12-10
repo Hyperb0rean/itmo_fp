@@ -152,6 +152,21 @@ let rec rev = function
 | Nil -> Nil
 | Cons (x, l') -> app (rev l') (Cons (x, Nil))
 
+(** val filter : ('a1 -> bool) -> 'a1 list -> 'a1 list **)
+
+let rec filter f = function
+| Nil -> Nil
+| Cons (x, l0) ->
+  (match f x with
+   | True -> Cons (x, (filter f l0))
+   | False -> filter f l0)
+
+(** val seq : nat -> nat -> nat list **)
+
+let rec seq start = function
+| O -> Nil
+| S len0 -> Cons (start, (seq (S start) len0))
+
 module Largest_palindrome =
  struct
   (** val digits : nat -> nat list **)
@@ -252,22 +267,22 @@ module Largest_palindrome =
 
 module Largest_prime_factor =
  struct
-  (** val smallest_factor_aux : nat -> nat -> nat **)
+  (** val mod_eq0b : nat -> nat -> bool **)
 
-  let rec smallest_factor_aux n d = match d with
-  | O -> O
-  | S d' ->
-    (match Nat.eqb (Nat.modulo n d) O with
-     | True -> Nat.div n d
-     | False -> smallest_factor_aux n d')
+  let mod_eq0b p d =
+    Nat.eqb (Nat.modulo p d) O
+
+  (** val factors : nat -> nat list **)
+
+  let factors p =
+    filter (mod_eq0b p) (seq (S (S O)) p)
 
   (** val smallest_factor : nat -> nat **)
 
-  let smallest_factor n = match n with
-  | O -> O
-  | S n' -> (match n' with
-             | O -> O
-             | S _ -> smallest_factor_aux n n')
+  let smallest_factor p =
+    match factors p with
+    | Nil -> p
+    | Cons (x, _) -> x
 
   (** val largest_prime_factor : nat -> nat **)
 
