@@ -8,7 +8,10 @@
 
 -Q ./data-structures DataStructures
 
+./data-structures/Int.v
 ./data-structures/Binary_tree.v
+./data-structures/Red_black_tree.v
+
 
 -Q ./lib Lib
 

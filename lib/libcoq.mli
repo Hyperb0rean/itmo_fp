@@ -1,94 +1,55 @@
 
-type bool =
-| True
-| False
+type 'a option =
+| Some of 'a
+| None
 
-type nat =
-| O
-| S of nat
 
-type ('a, 'b) prod =
-| Pair of 'a * 'b
 
-val fst : ('a1, 'a2) prod -> 'a1
-
-val snd : ('a1, 'a2) prod -> 'a2
-
-type 'a list =
-| Nil
-| Cons of 'a * 'a list
-
-val app : 'a1 list -> 'a1 list -> 'a1 list
-
-type ('a, 'p) sigT =
-| ExistT of 'a * 'p
-
-val projT1 : ('a1, 'a2) sigT -> 'a1
-
-val projT2 : ('a1, 'a2) sigT -> 'a2
-
-val add : nat -> nat -> nat
-
-val mul : nat -> nat -> nat
-
-val sub : nat -> nat -> nat
-
-module Nat :
+module Red_black_tree :
  sig
-  val add : nat -> nat -> nat
+  type key = int
 
-  val mul : nat -> nat -> nat
+  type color =
+  | Red
+  | Black
 
-  val sub : nat -> nat -> nat
+  val color_rect : 'a1 -> 'a1 -> color -> 'a1
 
-  val eqb : nat -> nat -> bool
+  val color_rec : 'a1 -> 'a1 -> color -> 'a1
 
-  val leb : nat -> nat -> bool
+  val flip_color : color -> color
 
-  val ltb : nat -> nat -> bool
+  type 'v rbtree =
+  | Coq_nil
+  | Coq_node of color * 'v rbtree * key * 'v * 'v rbtree
 
-  val pow : nat -> nat -> nat
+  val rbtree_rect :
+    'a2 -> (color -> 'a1 rbtree -> 'a2 -> key -> 'a1 -> 'a1 rbtree -> 'a2 ->
+    'a2) -> 'a1 rbtree -> 'a2
 
-  val divmod : nat -> nat -> nat -> nat -> (nat, nat) prod
+  val rbtree_rec :
+    'a2 -> (color -> 'a1 rbtree -> 'a2 -> key -> 'a1 -> 'a1 rbtree -> 'a2 ->
+    'a2) -> 'a1 rbtree -> 'a2
 
-  val div : nat -> nat -> nat
+  val mk_nil : 'a1 rbtree
 
-  val modulo : nat -> nat -> nat
- end
+  val lookup : key -> 'a1 rbtree -> 'a1 option
 
-val rev : 'a1 list -> 'a1 list
+  val rot_left : 'a1 rbtree -> 'a1 rbtree
 
-val filter : ('a1 -> bool) -> 'a1 list -> 'a1 list
+  val rot_right : 'a1 rbtree -> 'a1 rbtree
 
-val seq : nat -> nat -> nat list
+  val flip_colors : 'a1 rbtree -> 'a1 rbtree
 
-module Largest_palindrome :
- sig
-  val digits : nat -> nat list
+  val make_black : 'a1 rbtree -> 'a1 rbtree
 
-  val list_beq : ('a1 -> 'a1 -> bool) -> 'a1 list -> 'a1 list -> bool
+  val balance : 'a1 rbtree -> 'a1 rbtree
 
-  val is_palindrome : nat -> bool
+  val ins : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree
 
-  val max_palindrom : nat -> nat -> nat -> nat
+  val insert : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree
 
-  val find_max_aux_func :
-    ((nat, nat) prod, (nat, (nat, nat) sigT) sigT) sigT -> nat
+  val elements_aux : 'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list
 
-  val find_max_aux : (nat, nat) prod -> nat -> nat -> nat -> nat
-
-  val find_max : nat -> nat -> nat
-
-  val largest_palindrome : nat -> nat
- end
-
-module Largest_prime_factor :
- sig
-  val mod_eq0b : nat -> nat -> bool
-
-  val factors : nat -> nat list
-
-  val smallest_factor : nat -> nat
-
-  val largest_prime_factor : nat -> nat
+  val elements : 'a1 rbtree -> (key * 'a1) list
  end
