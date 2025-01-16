@@ -44,7 +44,7 @@ Fixpoint lookup {V : Type} (x: key) (t : rbtree V) : option V :=
 (*
       k  - tc    
      / \
-    a   kr - rc
+    a   rk - rc
        / \
       b   c
 ->
@@ -117,7 +117,7 @@ Definition balance
         | _ =>
     match r with
         | node Red (node Red _ _ _ _) _ _ _ =>
-            let temp_t := node Black r k vk (rot_right r) in
+            let temp_t := node Black l k vk (rot_right r) in
             flip_colors (make_black (rot_left temp_t))
         | node Red _ _ _ (node Red _ _ _ _) =>
             flip_colors (make_black (rot_left t))

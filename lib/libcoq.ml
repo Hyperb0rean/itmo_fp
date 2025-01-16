@@ -142,7 +142,7 @@ module Red_black_tree =
                  | Coq_node (c1, _, _, _, _) ->
                    (match c1 with
                     | Red ->
-                      let temp_t = Coq_node (Black, r, k, vk, (rot_right r))
+                      let temp_t = Coq_node (Black, l, k, vk, (rot_right r))
                       in
                       flip_colors (make_black (rot_left temp_t))
                     | Black ->
@@ -176,7 +176,7 @@ module Red_black_tree =
                           | Coq_node (c2, _, _, _, _) ->
                             (match c2 with
                              | Red ->
-                               let temp_t = Coq_node (Black, r, k, vk,
+                               let temp_t = Coq_node (Black, l, k, vk,
                                  (rot_right r))
                                in
                                flip_colors (make_black (rot_left temp_t))
@@ -212,7 +212,7 @@ module Red_black_tree =
                              | Coq_node (c3, _, _, _, _) ->
                                (match c3 with
                                 | Red ->
-                                  let temp_t = Coq_node (Black, r, k, vk,
+                                  let temp_t = Coq_node (Black, l, k, vk,
                                     (rot_right r))
                                   in
                                   flip_colors (make_black (rot_left temp_t))
@@ -248,7 +248,7 @@ module Red_black_tree =
                              | Coq_node (c3, _, _, _, _) ->
                                (match c3 with
                                 | Red ->
-                                  let temp_t = Coq_node (Black, r, k, vk,
+                                  let temp_t = Coq_node (Black, l, k, vk,
                                     (rot_right r))
                                   in
                                   flip_colors (make_black (rot_left temp_t))
@@ -285,7 +285,7 @@ module Red_black_tree =
                                 | Coq_node (c4, _, _, _, _) ->
                                   (match c4 with
                                    | Red ->
-                                     let temp_t = Coq_node (Black, r, k, vk,
+                                     let temp_t = Coq_node (Black, l, k, vk,
                                        (rot_right r))
                                      in
                                      flip_colors
@@ -317,7 +317,7 @@ module Red_black_tree =
                     | Coq_node (c2, _, _, _, _) ->
                       (match c2 with
                        | Red ->
-                         let temp_t = Coq_node (Black, r, k, vk,
+                         let temp_t = Coq_node (Black, l, k, vk,
                            (rot_right r))
                          in
                          flip_colors (make_black (rot_left temp_t))
