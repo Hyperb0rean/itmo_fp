@@ -31,6 +31,7 @@ Turned out that calculating of such big number produces stackoverflow, so I fall
 
 ### Lab 2 - Data Structures
 
+Implemented Set based on Red Black Tree
 
 ### Materials
 
