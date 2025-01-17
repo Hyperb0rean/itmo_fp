@@ -56,3 +56,33 @@ rbtree_iter print_node
 
 let () = print_endline ""
 let () = List.iter print_pair (elements tree)
+let left = insert 2 "2" (insert 1 "1" (insert 3 "3" mk_nil))
+let right = insert 5 "5" (insert 4 "4" (insert 6 "6" mk_nil))
+let () = print_endline "";;
+
+rbtree_iter print_node
+  (fun () -> Printf.printf "r ")
+  (fun () -> Printf.printf "l ")
+  left
+
+let () = print_endline "";;
+
+rbtree_iter print_node
+  (fun () -> Printf.printf "r ")
+  (fun () -> Printf.printf "l ")
+  right
+
+let () = print_endline "";;
+
+rbtree_iter print_node
+  (fun () -> Printf.printf "r ")
+  (fun () -> Printf.printf "l ")
+  (union left right)
+
+let () = print_endline ""
+let () = List.iter print_pair (elements (union left right))
+let () = print_endline ""
+
+let () =
+  let (_, _), r = split 1 "1" (insert 0 "0" left) in
+  List.iter print_pair (elements r)

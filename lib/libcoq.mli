@@ -1,9 +1,10 @@
 
-type 'a option =
-| Some of 'a
-| None
+val add : int -> int -> int
 
-
+module Nat :
+ sig
+  val ltb : int -> int -> bool
+ end
 
 module Red_black_tree :
  sig
@@ -45,9 +46,21 @@ module Red_black_tree :
 
   val balance : 'a1 rbtree -> 'a1 rbtree
 
-  val ins : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree
+  val insert_aux : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree
 
   val insert : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree
+
+  val black_height : 'a1 rbtree -> int
+
+  val join_right : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
+
+  val join_left : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
+
+  val join : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
+
+  val split : key -> 'a1 -> 'a1 rbtree -> ('a1 rbtree * bool) * 'a1 rbtree
+
+  val union : 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
 
   val elements_aux : 'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list
 

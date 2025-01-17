@@ -126,16 +126,91 @@ Definition balance
     end
   end.
 
-Fixpoint ins {V : Type} (x : key) (vx : V) (t : rbtree V) : rbtree V :=
+Fixpoint insert_aux {V : Type} (x : key) (vx : V) (t : rbtree V) : rbtree V :=
   match t with
   | nil => node Red nil x vx nil
-  | node c a y vy b => if Int.ltb x y then balance (node c (ins x vx a) y vy b)
-                   else if Int.ltb y x then balance (node c a y vy (ins x vx b))
+  | node c a y vy b => if Int.ltb x y then balance (node c (insert_aux x vx a) y vy b)
+                   else if Int.ltb y x then balance (node c a y vy (insert_aux x vx b))
                         else node c a x vx b
   end.
 
 Definition insert {V : Type} (x : key) (vx : V) (t : rbtree V) : rbtree V :=
-  make_black (ins x vx t).
+  make_black (insert_aux x vx t).
+
+
+(* assume balanced *)
+Fixpoint black_height {V: Type} (t: rbtree V) : nat :=
+  match t with
+  | nil => 0  
+  | node Black l _ _ _ => (black_height l) + 1
+  | node Red l _ _ _ => (black_height l)
+  end.
+
+Fixpoint join_right {V: Type} (k: key) (vk: V) (l r: rbtree V) : rbtree V :=
+  let equal_h := (black_height l) =? (black_height r) in  
+  match (l, equal_h) with
+  | (nil, _) => insert k vk r
+  | (node Black ll x vx lr, false) => 
+    let t' := node Black ll x vx (join_right k vk lr r) in
+    balance t'
+  | (node Black _ _ _ _, true) => node Red l k vk r      
+  | (node Red ll x vx lr, _) => node Red ll x vx (join_right k vk lr r)   
+    end.
+
+Fixpoint join_left {V: Type} (k: key) (vk: V) (l r: rbtree V) : rbtree V :=
+  let equal_h := (black_height l) =? (black_height r) in  
+  match (r, equal_h) with
+  | (nil, _) => insert k vk l
+  | (node Black rl x vx rr, false) => 
+    let t' := node Black (join_left k vk l rl) x vx rr in
+    balance t'
+  | (node Black _ _ _ _, true) => node Red l k vk r      
+  | (node Red rl x vx rr, _) => node Red (join_left k vk l rl) x vx rr   
+    end.
+
+Definition join {V: Type} (k: key) (vk: V) (l r : rbtree V) : rbtree V :=
+  if  (black_height r) <? (black_height l) then 
+    let t' := join_right k vk l r in
+    match t' with
+    | node Red _ _ _ (node Red _ _ _ _) => make_black t'
+    | _ => t'
+    end
+  else if (black_height l) <? (black_height r) then
+    let t' := join_left k vk l r in
+    match t' with
+    | node Red (node Red _ _ _ _) _ _ _ => make_black t'
+    | _ => t'
+    end
+  else 
+    match (l, r) with
+    | (node Black _ _ _ _, node Black _ _ _ _) => node Red l k vk r
+    | _ => node Black l k vk r
+    end.
+
+Fixpoint split {V: Type} (k: key) (vk: V) (t: rbtree V) : (rbtree V * bool * rbtree V) :=
+  match t with
+  | nil => (nil, false, nil)
+  | node _ l tk vtk r => 
+    if Int.ltb k tk then 
+      let '(l', b, r') := (split k vk l) in
+      (l', b, (join tk vtk r' r))
+    else if Int.ltb tk k then 
+      let '(l', b, r') := split k vk r in
+      ((join tk vtk l l'), b, r')
+    else (l, true, r)
+  end.
+
+Fixpoint union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
+  match (t1, t2) with
+  | (nil, nil) => nil
+  | (nil, _) => t2
+  | (_ ,nil) => t1
+  | (node _ _ _ _ _, node _ l2 k2 vk2 r2) =>
+    let '(l1, b, r1) := split k2 vk2 t1 in
+    let tl := union l1 l2 in
+    let tr := union r1 r2 in
+    (join k2 vk2 tl tr)
+  end.
 
 Fixpoint elements_aux {V : Type} (t : rbtree V) (acc: list (key * V))
   : list (key * V) :=
