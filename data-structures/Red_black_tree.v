@@ -222,4 +222,18 @@ Fixpoint elements_aux {V : Type} (t : rbtree V) (acc: list (key * V))
 Definition elements {V : Type} (t : rbtree V) : list (key * V) :=
   elements_aux t [].
 
+Fixpoint elements_beq {V: Type} (x y : list (key * V)) : bool :=
+  match x, y with
+  | [], [] => true                 
+  | _, [] => false                 
+  | [], _ => false                 
+  | h1 :: t1, h2 :: t2 =>
+      let '(k1, _) := h1 in
+      let '(k2, _) := h2 in         
+      andb (Int.eqb k1 k2) (elements_beq t1 t2)  
+  end.
+
+Definition rbtree_eqb {V: Type} (t1 t2: rbtree V) : bool :=
+  elements_beq (elements t1) (elements t2).
+
 End Red_black_tree.

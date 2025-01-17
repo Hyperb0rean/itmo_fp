@@ -18,8 +18,9 @@ Parameter leb: int -> int -> bool.
 Extract Inlined Constant leb => "( <= )".
 Axiom leb_le : forall (n m : int), leb n m = true <-> mk_z n <= mk_z m.
 
-Parameter zero: int.
-Extract Inlined Constant zero => "0".
+Parameter eqb: int -> int -> bool .
+Extract Inlined Constant eqb => "( == )".
+Axiom eqb_eq : forall (n m : int), eqb n m = true <-> mk_z n = mk_z m.
 
 
 Close Scope Z_scope.

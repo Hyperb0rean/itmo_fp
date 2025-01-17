@@ -5,3 +5,7 @@
 (test
  (name test_largest_prime_factor)
  (libraries itmo_fp))
+
+(test
+ (name test_rbtree)
+ (libraries itmo_fp))

@@ -65,4 +65,8 @@ module Red_black_tree :
   val elements_aux : 'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list
 
   val elements : 'a1 rbtree -> (key * 'a1) list
+
+  val elements_beq : (key * 'a1) list -> (key * 'a1) list -> bool
+
+  val rbtree_eqb : 'a1 rbtree -> 'a1 rbtree -> bool
  end

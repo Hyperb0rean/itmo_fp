@@ -500,4 +500,21 @@ module Red_black_tree = struct
   (** val elements : 'a1 rbtree -> (key * 'a1) list **)
 
   let elements t = elements_aux t []
+
+  (** val elements_beq : (key * 'a1) list -> (key * 'a1) list -> bool **)
+
+  let rec elements_beq x y =
+    match x with
+    | [] -> ( match y with [] -> true | _ :: _ -> false)
+    | h1 :: t1 -> (
+        match y with
+        | [] -> false
+        | h2 :: t2 ->
+            let k1, _ = h1 in
+            let k2, _ = h2 in
+            k1 == k2 && elements_beq t1 t2)
+
+  (** val rbtree_eqb : 'a1 rbtree -> 'a1 rbtree -> bool **)
+
+  let rbtree_eqb t1 t2 = elements_beq (elements t1) (elements t2)
 end
