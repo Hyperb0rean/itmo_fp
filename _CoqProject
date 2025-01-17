@@ -1,16 +1,16 @@
 -Q . Itmo
 
--Q ./project-euler ProjectEuler
+-Q ./lab-1-project-euler ProjectEuler
 
-./project-euler/Largest_palindrome.v
-./project-euler/Largest_prime_factor.v
+./lab-1-project-euler/Largest_palindrome.v
+./lab-1-project-euler/Largest_prime_factor.v
 
 
--Q ./data-structures DataStructures
+-Q ./lab-2-data-structures DataStructures
 
-./data-structures/Int.v
-./data-structures/Binary_tree.v
-./data-structures/Red_black_tree.v
+./lab-2-data-structures/Int.v
+./lab-2-data-structures/Binary_tree.v
+./lab-2-data-structures/Red_black_tree.v
 
 
 -Q ./lib Lib
