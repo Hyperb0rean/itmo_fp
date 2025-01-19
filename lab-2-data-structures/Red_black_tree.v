@@ -1,8 +1,3 @@
-
-(*
-https://koerbitz.me/posts/Red-Black-Trees-In-Coq-Part-0.html
-https://softwarefoundations.cis.upenn.edu/vfa-current/Redblack.html
-*)
 Require Import ZArith.
 Require Import Coq.Lists.List.
 Import ListNotations.
@@ -239,7 +234,7 @@ Definition delete {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool) :=
 Fixpoint size {V: Type} (t: rbtree V) : nat :=
   match t with 
   | nil => 0
-  | node _ l _ _ r => (size l) + 1 + size (r)
+  | node _ l _ _ r => (size l) + 1 + (size r)
   end.
 
 Module IterDetails.
