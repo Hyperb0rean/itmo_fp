@@ -43,6 +43,11 @@ Supports:
 - `elements` into `list (k*V)` conversion
 
 
+Based on 
+- [Implementation of basic RBtree](https://koerbitz.me/posts/Red-Black-Trees-In-Coq-Part-0.html)
+- [Basic RBtree from book](https://softwarefoundations.cis.upenn.edu/vfa-current/Redblack.html)
+- [Wiki page on RBtrees](https://en.wikipedia.org/wiki/Red%E2%80%93black_tree)
+
 ### Materials
 
 - [Software Foundations](https://softwarefoundations.cis.upenn.edu/)
