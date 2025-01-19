@@ -31,7 +31,17 @@ Turned out that calculating of such big number produces stackoverflow, so I fall
 
 ### Lab 2 - Data Structures
 
-Implemented Set based on Red Black Tree
+Implemented Red Black Tree in Coq
+
+Supports:
+
+- `insert` in O(logn)
+- `lookup` in O(logn)
+- `min/max` in O(logn)
+- `union` in O(mlog(n/m + 1))
+- `delete` via `split` + `union`
+- `elements` into `list (k*V)` conversion
+
 
 ### Materials
 

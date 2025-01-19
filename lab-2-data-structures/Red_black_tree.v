@@ -35,11 +35,30 @@ Definition mk_nil {V: Type} : rbtree V :=
 Fixpoint lookup {V : Type} (x: key) (t : rbtree V) : option V :=
   match t with
   | nil => None
-  | node _ t_left k v t_right => if Int.ltb x k then lookup x t_left
-                    else if Int.ltb k x then lookup x t_right
+  | node _ l k v r => if Int.ltb x k then lookup x l
+                    else if Int.ltb k x then lookup x r
                          else Some v
   end.
 
+Fixpoint max {V: Type} (t: rbtree V) : option (key * V) :=
+  match t with
+  | nil => None
+  | node _ _ k vk r 
+    => match r with 
+      | nil => Some (k, vk)
+      | _ => max r
+      end
+  end.
+
+Fixpoint min {V: Type} (t: rbtree V) : option (key * V) :=
+  match t with
+  | nil => None
+  | node _ l k vk _ 
+    => match l with 
+      | nil => Some (k, vk)
+      | _ => min l
+      end
+  end.
 
 (*
       k  - tc    
@@ -187,15 +206,15 @@ Definition join {V: Type} (k: key) (vk: V) (l r : rbtree V) : rbtree V :=
     | _ => node Black l k vk r
     end.
 
-Fixpoint split {V: Type} (k: key) (vk: V) (t: rbtree V) : (rbtree V * bool * rbtree V) :=
+Fixpoint split {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool * rbtree V) :=
   match t with
   | nil => (nil, false, nil)
   | node _ l tk vtk r => 
     if Int.ltb k tk then 
-      let '(l', b, r') := (split k vk l) in
+      let '(l', b, r') := (split k l) in
       (l', b, (join tk vtk r' r))
     else if Int.ltb tk k then 
-      let '(l', b, r') := split k vk r in
+      let '(l', b, r') := split k r in
       ((join tk vtk l l'), b, r')
     else (l, true, r)
   end.
@@ -206,11 +225,16 @@ Fixpoint union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
   | (nil, _) => t2
   | (_ ,nil) => t1
   | (node _ _ _ _ _, node _ l2 k2 vk2 r2) =>
-    let '(l1, b, r1) := split k2 vk2 t1 in
+    let '(l1, b, r1) := split k2 t1 in
     let tl := union l1 l2 in
     let tr := union r1 r2 in
     (join k2 vk2 tl tr)
   end.
+
+Definition delete {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool) := 
+  let '(l, b, r) := split k t in
+  if b then (union l r, true)
+  else (t, false).
 
 Fixpoint elements_aux {V : Type} (t : rbtree V) (acc: list (key * V))
   : list (key * V) :=
