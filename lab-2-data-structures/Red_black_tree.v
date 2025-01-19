@@ -15,12 +15,6 @@ Definition key := Int.int.
 
 Inductive color := Red | Black.
 
-Definition flip_color (c: color) : color :=
-  match c with
-    | Red => Black
-    | Black => Red
-  end.
-
 Inductive rbtree (V : Type) : Type :=
 | nil : rbtree V
 | node : color -> rbtree V -> key -> V -> rbtree V -> rbtree V.
@@ -60,6 +54,7 @@ Fixpoint min {V: Type} (t: rbtree V) : option (key * V) :=
       end
   end.
 
+Module BalanceDetails.
 (*
       k  - tc    
      / \
@@ -153,9 +148,12 @@ Fixpoint insert_aux {V : Type} (x : key) (vx : V) (t : rbtree V) : rbtree V :=
                         else node c a x vx b
   end.
 
-Definition insert {V : Type} (x : key) (vx : V) (t : rbtree V) : rbtree V :=
-  make_black (insert_aux x vx t).
+End BalanceDetails.
 
+Definition insert {V : Type} (x : key) (vx : V) (t : rbtree V) : rbtree V :=
+  BalanceDetails.make_black (BalanceDetails.insert_aux x vx t).
+
+Module UnionDetails.
 
 (* assume balanced *)
 Fixpoint black_height {V: Type} (t: rbtree V) : nat :=
@@ -171,7 +169,7 @@ Fixpoint join_right {V: Type} (k: key) (vk: V) (l r: rbtree V) : rbtree V :=
   | (nil, _) => insert k vk r
   | (node Black ll x vx lr, false) => 
     let t' := node Black ll x vx (join_right k vk lr r) in
-    balance t'
+    BalanceDetails.balance t'
   | (node Black _ _ _ _, true) => node Red l k vk r      
   | (node Red ll x vx lr, _) => node Red ll x vx (join_right k vk lr r)   
     end.
@@ -182,7 +180,7 @@ Fixpoint join_left {V: Type} (k: key) (vk: V) (l r: rbtree V) : rbtree V :=
   | (nil, _) => insert k vk l
   | (node Black rl x vx rr, false) => 
     let t' := node Black (join_left k vk l rl) x vx rr in
-    balance t'
+    BalanceDetails.balance t'
   | (node Black _ _ _ _, true) => node Red l k vk r      
   | (node Red rl x vx rr, _) => node Red (join_left k vk l rl) x vx rr   
     end.
@@ -191,13 +189,13 @@ Definition join {V: Type} (k: key) (vk: V) (l r : rbtree V) : rbtree V :=
   if  (black_height r) <? (black_height l) then 
     let t' := join_right k vk l r in
     match t' with
-    | node Red _ _ _ (node Red _ _ _ _) => make_black t'
+    | node Red _ _ _ (node Red _ _ _ _) => BalanceDetails.make_black t'
     | _ => t'
     end
   else if (black_height l) <? (black_height r) then
     let t' := join_left k vk l r in
     match t' with
-    | node Red (node Red _ _ _ _) _ _ _ => make_black t'
+    | node Red (node Red _ _ _ _) _ _ _ => BalanceDetails.make_black t'
     | _ => t'
     end
   else 
@@ -218,6 +216,8 @@ Fixpoint split {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool * rbtree V) :
       ((join tk vtk l l'), b, r')
     else (l, true, r)
   end.
+  
+End UnionDetails.
 
 Fixpoint union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
   match (t1, t2) with
@@ -225,17 +225,24 @@ Fixpoint union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
   | (nil, _) => t2
   | (_ ,nil) => t1
   | (node _ _ _ _ _, node _ l2 k2 vk2 r2) =>
-    let '(l1, b, r1) := split k2 t1 in
+    let '(l1, b, r1) := UnionDetails.split k2 t1 in
     let tl := union l1 l2 in
     let tr := union r1 r2 in
-    (join k2 vk2 tl tr)
+    (UnionDetails.join k2 vk2 tl tr)
   end.
 
 Definition delete {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool) := 
-  let '(l, b, r) := split k t in
+  let '(l, b, r) := UnionDetails.split k t in
   if b then (union l r, true)
   else (t, false).
 
+Fixpoint size {V: Type} (t: rbtree V) : nat :=
+  match t with 
+  | nil => 0
+  | node _ l _ _ r => (size l) + 1 + size (r)
+  end.
+
+Module IterDetails.
 Fixpoint elements_aux {V : Type} (t : rbtree V) (acc: list (key * V))
   : list (key * V) :=
   match t with
@@ -243,21 +250,39 @@ Fixpoint elements_aux {V : Type} (t : rbtree V) (acc: list (key * V))
   | node _ l k v r => elements_aux l ((k, v) :: elements_aux r acc)
   end.
 
-Definition elements {V : Type} (t : rbtree V) : list (key * V) :=
-  elements_aux t [].
 
-Fixpoint elements_beq {V: Type} (x y : list (key * V)) : bool :=
-  match x, y with
-  | [], [] => true                 
-  | _, [] => false                 
-  | [], _ => false                 
-  | h1 :: t1, h2 :: t2 =>
-      let '(k1, _) := h1 in
-      let '(k2, _) := h2 in         
-      andb (Int.eqb k1 k2) (elements_beq t1 t2)  
+Fixpoint next {V: Type} (k: key) (t: rbtree V) : option (key * V) := 
+  match t with
+  | nil => None
+  | node _ l nk vnk r =>
+      if Int.ltb k nk then
+        match next k l with
+        | None => Some (nk, vnk) 
+        | some_v => some_v
+        end
+      else if Int.ltb nk k then
+        next k r
+      else 
+        min r
   end.
 
-Definition rbtree_eqb {V: Type} (t1 t2: rbtree V) : bool :=
-  elements_beq (elements t1) (elements t2).
+Fixpoint iter_aux {V: Type} (f: (key * V) -> unit) (k : key) (t: rbtree V) (fuel: nat) {struct fuel}: unit :=
+  match (next k t, fuel) with
+  | (Some (nk, vnk), S pfuel) => let _ := f (nk, vnk) in
+    iter_aux f nk t pfuel
+  | _ => tt
+  end.
+End IterDetails.
+
+Definition iter {V: Type} (f: (key * V) -> unit) (t: rbtree V) :=
+  match min t with
+  | Some (fst, fstv) => let _ := f (fst, fstv) in 
+    let fuel := size t in
+    IterDetails.iter_aux f fst t fuel
+  | _ => tt
+  end.
+
+Definition elements {V : Type} (t : rbtree V) : list (key * V) :=
+  IterDetails.elements_aux t [].
 
 End Red_black_tree.

@@ -18,8 +18,6 @@ module Red_black_tree :
 
   val color_rec : 'a1 -> 'a1 -> color -> 'a1
 
-  val flip_color : color -> color
-
   type 'v rbtree =
   | Coq_nil
   | Coq_node of color * 'v rbtree * key * 'v * 'v rbtree
@@ -36,37 +34,56 @@ module Red_black_tree :
 
   val lookup : key -> 'a1 rbtree -> 'a1 option
 
-  val rot_left : 'a1 rbtree -> 'a1 rbtree
+  val max : 'a1 rbtree -> (key * 'a1) option
 
-  val rot_right : 'a1 rbtree -> 'a1 rbtree
+  val min : 'a1 rbtree -> (key * 'a1) option
 
-  val flip_colors : 'a1 rbtree -> 'a1 rbtree
+  module BalanceDetails :
+   sig
+    val rot_left : 'a1 rbtree -> 'a1 rbtree
 
-  val make_black : 'a1 rbtree -> 'a1 rbtree
+    val rot_right : 'a1 rbtree -> 'a1 rbtree
 
-  val balance : 'a1 rbtree -> 'a1 rbtree
+    val flip_colors : 'a1 rbtree -> 'a1 rbtree
 
-  val insert_aux : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree
+    val make_black : 'a1 rbtree -> 'a1 rbtree
+
+    val balance : 'a1 rbtree -> 'a1 rbtree
+
+    val insert_aux : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree
+   end
 
   val insert : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree
 
-  val black_height : 'a1 rbtree -> int
+  module UnionDetails :
+   sig
+    val black_height : 'a1 rbtree -> int
 
-  val join_right : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
+    val join_right : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
 
-  val join_left : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
+    val join_left : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
 
-  val join : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
+    val join : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
 
-  val split : key -> 'a1 -> 'a1 rbtree -> ('a1 rbtree * bool) * 'a1 rbtree
+    val split : key -> 'a1 rbtree -> ('a1 rbtree * bool) * 'a1 rbtree
+   end
 
   val union : 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
 
-  val elements_aux : 'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list
+  val delete : key -> 'a1 rbtree -> 'a1 rbtree * bool
+
+  val size : 'a1 rbtree -> int
+
+  module IterDetails :
+   sig
+    val elements_aux : 'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list
+
+    val next : key -> 'a1 rbtree -> (key * 'a1) option
+
+    val iter_aux : ((key * 'a1) -> unit) -> key -> 'a1 rbtree -> int -> unit
+   end
+
+  val iter : ((key * 'a1) -> unit) -> 'a1 rbtree -> unit
 
   val elements : 'a1 rbtree -> (key * 'a1) list
-
-  val elements_beq : (key * 'a1) list -> (key * 'a1) list -> bool
-
-  val rbtree_eqb : 'a1 rbtree -> 'a1 rbtree -> bool
  end

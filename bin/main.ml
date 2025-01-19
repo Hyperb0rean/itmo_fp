@@ -82,7 +82,3 @@ rbtree_iter print_node
 let () = print_endline ""
 let () = List.iter print_pair (elements (union left right))
 let () = print_endline ""
-
-let () =
-  let (_, _), r = split 1 "1" (insert 0 "0" left) in
-  List.iter print_pair (elements r)
