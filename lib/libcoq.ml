@@ -2,6 +2,10 @@
 
 let add = ( + )
 
+(** val sub : int -> int -> int **)
+
+let sub = fun n m -> Stdlib.max 0 (n - m)
+
 module Nat = struct
   (** val ltb : int -> int -> bool **)
 
@@ -531,7 +535,7 @@ module Red_black_tree = struct
     | Coq_node (_, l, _, _, r) ->
         add (add (size l) (Stdlib.Int.succ 0)) (size r)
 
-  module IterDetails = struct
+  module FoldDetails = struct
     (** val elements_aux : 'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list **)
 
     let rec elements_aux t acc =
@@ -549,32 +553,70 @@ module Red_black_tree = struct
           else if nk < k then next k r
           else min r
 
-    (** val iter_aux : ((key * 'a1) -> unit) -> key -> 'a1 rbtree -> int -> unit
-        **)
+    (** val foldr_aux : 'a2 -> ((key * 'a1) -> 'a2 -> 'a2) -> key -> 'a1 rbtree
+        -> int -> 'a2 **)
 
-    let rec iter_aux f k t fuel =
-      let o = next k t in
-      match o with
+    let rec foldr_aux init f k t fuel =
+      match next k t with
       | Some p ->
-          let nk, _ = p in
+          let nk, vnk = p in
           (fun fO fS n -> if n = 0 then fO () else fS (n - 1))
-            (fun _ -> ())
-            (fun pfuel -> iter_aux f nk t pfuel)
+            (fun _ -> init)
+            (fun pfuel -> f (nk, vnk) (foldr_aux init f nk t pfuel))
             fuel
-      | None -> ()
+      | None -> init
   end
 
-  (** val iter : ((key * 'a1) -> unit) -> 'a1 rbtree -> unit **)
+  (** val foldr : 'a2 -> ((key * 'a1) -> 'a2 -> 'a2) -> 'a1 rbtree -> 'a2 **)
 
-  let iter f t =
+  let foldr init f t =
     match min t with
     | Some p ->
-        let fst, _ = p in
+        let fst, fstv = p in
         let fuel = size t in
-        IterDetails.iter_aux f fst t fuel
-    | None -> ()
+        f (fst, fstv) (FoldDetails.foldr_aux init f fst t fuel)
+    | None -> init
 
   (** val elements : 'a1 rbtree -> (key * 'a1) list **)
 
-  let elements t = IterDetails.elements_aux t []
+  let elements t = FoldDetails.elements_aux t []
+
+  module EqbDetails = struct
+    (** val eqb_aux : key -> 'a1 rbtree -> 'a1 rbtree -> int -> bool **)
+
+    let rec eqb_aux k t1 t2 fuel =
+      match FoldDetails.next k t1 with
+      | Some p -> (
+          let nk1, _ = p in
+          match FoldDetails.next k t2 with
+          | Some p0 ->
+              let nk2, _ = p0 in
+              (fun fO fS n -> if n = 0 then fO () else fS (n - 1))
+                (fun _ -> false)
+                (fun pfuel ->
+                  if nk1 == nk2 then eqb_aux nk1 t1 t2 pfuel else false)
+                fuel
+          | None -> false)
+      | None -> (
+          match FoldDetails.next k t2 with
+          | Some _ -> false
+          | None ->
+              (fun fO fS n -> if n = 0 then fO () else fS (n - 1))
+                (fun _ -> true)
+                (fun _ -> false)
+                fuel)
+  end
+
+  (** val rbtree_eqb : 'a1 rbtree -> 'a1 rbtree -> bool **)
+
+  let rbtree_eqb t1 t2 =
+    match min t1 with
+    | Some p -> (
+        let k1, _ = p in
+        match min t2 with
+        | Some _ ->
+            let fuel = size t1 in
+            EqbDetails.eqb_aux k1 t1 t2 (sub fuel (Stdlib.Int.succ 0))
+        | None -> false)
+    | None -> ( match min t2 with Some _ -> false | None -> true)
 end

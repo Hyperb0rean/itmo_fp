@@ -160,24 +160,24 @@ Fixpoint black_height {V: Type} (t: rbtree V) : nat :=
 
 Fixpoint join_right {V: Type} (k: key) (vk: V) (l r: rbtree V) : rbtree V :=
   let equal_h := (black_height l) =? (black_height r) in  
-  match (l, equal_h) with
-  | (nil, _) => insert k vk r
-  | (node Black ll x vx lr, false) => 
+  match l, equal_h with
+  | nil, _ => insert k vk r
+  | node Black ll x vx lr, false => 
     let t' := node Black ll x vx (join_right k vk lr r) in
     BalanceDetails.balance t'
-  | (node Black _ _ _ _, true) => node Red l k vk r      
-  | (node Red ll x vx lr, _) => node Red ll x vx (join_right k vk lr r)   
+  | node Black _ _ _ _, true => node Red l k vk r      
+  | node Red ll x vx lr, _ => node Red ll x vx (join_right k vk lr r)   
     end.
 
 Fixpoint join_left {V: Type} (k: key) (vk: V) (l r: rbtree V) : rbtree V :=
   let equal_h := (black_height l) =? (black_height r) in  
-  match (r, equal_h) with
-  | (nil, _) => insert k vk l
-  | (node Black rl x vx rr, false) => 
+  match r, equal_h with
+  | nil, _ => insert k vk l
+  | node Black rl x vx rr, false => 
     let t' := node Black (join_left k vk l rl) x vx rr in
     BalanceDetails.balance t'
-  | (node Black _ _ _ _, true) => node Red l k vk r      
-  | (node Red rl x vx rr, _) => node Red (join_left k vk l rl) x vx rr   
+  | node Black _ _ _ _, true => node Red l k vk r      
+  | node Red rl x vx rr, _ => node Red (join_left k vk l rl) x vx rr   
     end.
 
 Definition join {V: Type} (k: key) (vk: V) (l r : rbtree V) : rbtree V :=
@@ -194,9 +194,9 @@ Definition join {V: Type} (k: key) (vk: V) (l r : rbtree V) : rbtree V :=
     | _ => t'
     end
   else 
-    match (l, r) with
-    | (node Black _ _ _ _, node Black _ _ _ _) => node Red l k vk r
-    | _ => node Black l k vk r
+    match l, r with
+    | node Black _ _ _ _, node Black _ _ _ _ => node Red l k vk r
+    | _,_ => node Black l k vk r
     end.
 
 Fixpoint split {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool * rbtree V) :=
@@ -215,11 +215,11 @@ Fixpoint split {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool * rbtree V) :
 End UnionDetails.
 
 Fixpoint union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
-  match (t1, t2) with
-  | (nil, nil) => nil
-  | (nil, _) => t2
-  | (_ ,nil) => t1
-  | (node _ _ _ _ _, node _ l2 k2 vk2 r2) =>
+  match t1, t2 with
+  | nil, nil => nil
+  | nil, _ => t2
+  | _ ,nil => t1
+  | node _ _ _ _ _, node _ l2 k2 vk2 r2 =>
     let '(l1, b, r1) := UnionDetails.split k2 t1 in
     let tl := union l1 l2 in
     let tr := union r1 r2 in
@@ -237,7 +237,7 @@ Fixpoint size {V: Type} (t: rbtree V) : nat :=
   | node _ l _ _ r => (size l) + 1 + (size r)
   end.
 
-Module IterDetails.
+Module FoldDetails.
 Fixpoint elements_aux {V : Type} (t : rbtree V) (acc: list (key * V))
   : list (key * V) :=
   match t with
@@ -261,23 +261,46 @@ Fixpoint next {V: Type} (k: key) (t: rbtree V) : option (key * V) :=
         min r
   end.
 
-Fixpoint iter_aux {V: Type} (f: (key * V) -> unit) (k : key) (t: rbtree V) (fuel: nat) {struct fuel}: unit :=
-  match (next k t, fuel) with
-  | (Some (nk, vnk), S pfuel) => let _ := f (nk, vnk) in
-    iter_aux f nk t pfuel
-  | _ => tt
+Fixpoint foldr_aux {V R: Type} (init: R) (f: (key * V) -> R -> R) (k : key) (t: rbtree V) (fuel: nat) {struct fuel}: R :=
+  match next k t, fuel with
+  | Some (nk, vnk), S pfuel => 
+    f (nk, vnk) (foldr_aux init f nk t pfuel)
+  | _,_ => init
   end.
-End IterDetails.
 
-Definition iter {V: Type} (f: (key * V) -> unit) (t: rbtree V) :=
+End FoldDetails.
+
+Definition foldr {V R: Type} (init: R) (f: (key * V) -> R -> R) (t: rbtree V) :=
   match min t with
-  | Some (fst, fstv) => let _ := f (fst, fstv) in 
+  | Some (fst, fstv) => 
     let fuel := size t in
-    IterDetails.iter_aux f fst t fuel
-  | _ => tt
+    f (fst, fstv) (FoldDetails.foldr_aux init f fst t fuel)
+  | _ => init
   end.
 
 Definition elements {V : Type} (t : rbtree V) : list (key * V) :=
-  IterDetails.elements_aux t [].
+  FoldDetails.elements_aux t [].
+
+Module EqbDetails.
+Fixpoint eqb_aux {V: Type} (k: key) (t1 t2: rbtree V) (fuel: nat) {struct fuel} : bool :=
+  match FoldDetails.next k t1, FoldDetails.next k t2, fuel with
+  | Some (nk1, _), Some (nk2, _), S pfuel =>
+      if Int.eqb nk1 nk2 then
+          eqb_aux nk1 t1 t2 pfuel
+      else
+        false  
+  | None, None, O => true  
+  | _,_,_ => false 
+  end.
+End EqbDetails.
+
+Definition rbtree_eqb {V: Type} (t1 t2: rbtree V) : bool :=
+  let fuel := size t1 in
+  match min t1, min t2, fuel with
+  | Some (k1, _), Some (k2, _), S pfuel => 
+  EqbDetails.eqb_aux k1 t1 t2 pfuel
+  | None, None, O => true 
+  | _,_, _ => false 
+  end.
 
 End Red_black_tree.

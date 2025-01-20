@@ -7,9 +7,18 @@ let elem_eq a b =
 
 let () = print_endline "Test Red_black_tree"
 let first = insert 1 "one" (insert 2 "two" (insert 3 "three" mk_nil))
-let second = insert 2 "two" (insert 1 "one" (insert 3 "three" mk_nil));;
+let second = insert 2 "two" (insert 1 "one" (insert 3 "three" mk_nil))
 
-assert (List.equal elem_eq (elements first) (elements second))
+let () =
+  foldr () (fun (key, str) -> fun () -> Printf.printf " (%d %s) " key str) first
+
+let () =
+  foldr ()
+    (fun (key, str) -> fun () -> Printf.printf " (%d %s) " key str)
+    second
+;;
+
+assert (rbtree_eqb first second)
 
 let () = print_endline "Passed equality"
 let left = insert 1 "one" (insert 2 "two" (insert 3 "three" mk_nil))

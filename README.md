@@ -41,6 +41,10 @@ Supports:
 - `union` in O(mlog(n/m + 1))
 - `delete` via `split` + `union`
 - `elements` into `list (k*V)` conversion
+- `foldr` for tree traversal
+- `rbtree_eqb` for tree comparison on equality
+
+Some prooven theorems:
 
 
 Based on 

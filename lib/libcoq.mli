@@ -1,6 +1,8 @@
 
 val add : int -> int -> int
 
+val sub : int -> int -> int
+
 module Nat :
  sig
   val ltb : int -> int -> bool
@@ -74,16 +76,24 @@ module Red_black_tree :
 
   val size : 'a1 rbtree -> int
 
-  module IterDetails :
+  module FoldDetails :
    sig
     val elements_aux : 'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list
 
     val next : key -> 'a1 rbtree -> (key * 'a1) option
 
-    val iter_aux : ((key * 'a1) -> unit) -> key -> 'a1 rbtree -> int -> unit
+    val foldr_aux :
+      'a2 -> ((key * 'a1) -> 'a2 -> 'a2) -> key -> 'a1 rbtree -> int -> 'a2
    end
 
-  val iter : ((key * 'a1) -> unit) -> 'a1 rbtree -> unit
+  val foldr : 'a2 -> ((key * 'a1) -> 'a2 -> 'a2) -> 'a1 rbtree -> 'a2
 
   val elements : 'a1 rbtree -> (key * 'a1) list
+
+  module EqbDetails :
+   sig
+    val eqb_aux : key -> 'a1 rbtree -> 'a1 rbtree -> int -> bool
+   end
+
+  val rbtree_eqb : 'a1 rbtree -> 'a1 rbtree -> bool
  end

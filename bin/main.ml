@@ -83,4 +83,6 @@ let () = print_endline ""
 let () = List.iter print_pair (elements (union left right))
 let () = print_endline ""
 let () = print_endline ""
-let () = iter print_pair left
+
+let () =
+  foldr () (fun (key, str) -> fun () -> Printf.printf " (%d %s) " key str) left
