@@ -1,3 +1,8 @@
 (library
  (name itmo_fp)
  (public_name itmo_fp))
+
+(env
+ (dev
+  (flags
+   (:standard -warn-error -A))))

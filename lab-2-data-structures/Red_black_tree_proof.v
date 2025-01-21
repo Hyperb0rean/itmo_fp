@@ -29,12 +29,23 @@ Proof.
   all: reflexivity.
 Qed.
 
+Lemma union_nil: forall (V: Type) (a b: rbtree V),
+  union a b = nil -> a = nil /\ b = nil.
+Proof.
+  intros V a b.
+  remember (union a b) as u.
+  destruct u.
+  - intros.
+    split.
+    all: rewrite -> Hequ; unfold union; simpl.
+    Admitted.
+  
+
 Lemma union_assoc: forall (V: Type) (a b c: rbtree V),
  (union a (union b c)) = (union (union a b) c).
  Proof.
   intros.
-  remember a as a'.
-  induction a'.
+  induction a.
   - rewrite neutral_union_l.
     rewrite neutral_union_l.
     reflexivity.
@@ -43,11 +54,15 @@ Lemma union_assoc: forall (V: Type) (a b c: rbtree V),
     + remember c as c'. destruct c'.
       -- auto. rewrite neutral_union_r. rewrite neutral_union_r. reflexivity.
       -- auto. 
-          rewrite -> Heqc'. rewrite -> Heqb'. rewrite -> Heqa'.
-          rewrite -> Heqc' in IHa'1. rewrite -> Heqc' in IHa'2.   
-          rewrite -> Heqb' in IHa'1. rewrite -> Heqb' in IHa'2. 
-          
-          simpl.
+          rewrite -> Heqc'. rewrite -> Heqb'.
+          rewrite -> Heqc' in IHa1. rewrite -> Heqc' in IHa2.   
+          rewrite -> Heqb' in IHa1. rewrite -> Heqb' in IHa2.
+         remember (union b c) as u. 
+         destruct u.
+         ++ rewrite neutral_union_r.
+            rewrite neutral_union_r in IHa1.
+            rewrite neutral_union_r in IHa2.
+        Admitted.
 
 End Monoid.
 

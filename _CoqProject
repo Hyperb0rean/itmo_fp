@@ -11,7 +11,7 @@
 ./lab-2-data-structures/Int.v
 ./lab-2-data-structures/Binary_tree.v
 ./lab-2-data-structures/Red_black_tree.v
-./lab-2-data-structures/Red_black_tree_proofs.v
+./lab-2-data-structures/Red_black_tree_proof.v
 
 
 -Q ./lib Lib
