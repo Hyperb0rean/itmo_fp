@@ -49,7 +49,6 @@ Fixpoint min {V: Type} (t: rbtree V) : option (key * V) :=
       end
   end.
 
-Module BalanceDetails.
 (*
       k  - tc    
      / \
@@ -111,6 +110,7 @@ Definition make_black {V : Type} (t : rbtree V) : rbtree V :=
   | node _ a x vx b => node Black a x vx b
   end.
 
+(* Made this, but was too hard to prove
 Definition balance
            {V : Type} (t : rbtree V) : rbtree V :=
   match t with
@@ -133,7 +133,34 @@ Definition balance
         | _ => t
     end
     end
+  end. *)
+
+(*From Software foundations*)
+
+
+Definition balance
+           {V : Type} (t : rbtree V) : rbtree V :=
+  match t with
+  | nil => nil
+  | node c l k vk r => 
+    match c with
+    | Red => node Red l k vk r
+    | _ => match l with
+          | node Red (node Red a x vx b) y vy c =>
+              node Red (node Black a x vx b) y vy (node Black c k vk r)
+          | node Red a x vx (node Red b y vy c) =>
+              node Red (node Black a x vx b) y vy (node Black c k vk r)
+          | _ => match r with
+                | node Red (node Red b y vy c) z vz d =>
+                    node Red (node Black l k vk b) y vy (node Black c z vz d)
+                | node Red b y vy (node Red c z vz d) =>
+                    node Red (node Black l k vk b) y vy (node Black c z vz d)
+                | _ => node Black l k vk r
+                end
+          end
+    end
   end.
+
 
 Fixpoint insert_aux {V : Type} (x : key) (vx : V) (t : rbtree V) : rbtree V :=
   match t with
@@ -143,12 +170,10 @@ Fixpoint insert_aux {V : Type} (x : key) (vx : V) (t : rbtree V) : rbtree V :=
                         else node c a x vx b
   end.
 
-End BalanceDetails.
 
 Definition insert {V : Type} (x : key) (vx : V) (t : rbtree V) : rbtree V :=
-  BalanceDetails.make_black (BalanceDetails.insert_aux x vx t).
+  make_black (insert_aux x vx t).
 
-Module UnionDetails.
 
 (* assume balanced *)
 Fixpoint black_height {V: Type} (t: rbtree V) : nat :=
@@ -164,7 +189,7 @@ Fixpoint join_right {V: Type} (k: key) (vk: V) (l r: rbtree V) : rbtree V :=
   | nil, _ => insert k vk r
   | node Black ll x vx lr, false => 
     let t' := node Black ll x vx (join_right k vk lr r) in
-    BalanceDetails.balance t'
+    balance t'
   | node Black _ _ _ _, true => node Red l k vk r      
   | node Red ll x vx lr, _ => node Red ll x vx (join_right k vk lr r)   
     end.
@@ -175,7 +200,7 @@ Fixpoint join_left {V: Type} (k: key) (vk: V) (l r: rbtree V) : rbtree V :=
   | nil, _ => insert k vk l
   | node Black rl x vx rr, false => 
     let t' := node Black (join_left k vk l rl) x vx rr in
-    BalanceDetails.balance t'
+    balance t'
   | node Black _ _ _ _, true => node Red l k vk r      
   | node Red rl x vx rr, _ => node Red (join_left k vk l rl) x vx rr   
     end.
@@ -184,13 +209,13 @@ Definition join {V: Type} (k: key) (vk: V) (l r : rbtree V) : rbtree V :=
   if  (black_height r) <? (black_height l) then 
     let t' := join_right k vk l r in
     match t' with
-    | node Red _ _ _ (node Red _ _ _ _) => BalanceDetails.make_black t'
+    | node Red _ _ _ (node Red _ _ _ _) => make_black t'
     | _ => t'
     end
   else if (black_height l) <? (black_height r) then
     let t' := join_left k vk l r in
     match t' with
-    | node Red (node Red _ _ _ _) _ _ _ => BalanceDetails.make_black t'
+    | node Red (node Red _ _ _ _) _ _ _ => make_black t'
     | _ => t'
     end
   else 
@@ -212,7 +237,6 @@ Fixpoint split {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool * rbtree V) :
     else (l, true, r)
   end.
   
-End UnionDetails.
 
 Fixpoint union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
   match t1, t2 with
@@ -220,14 +244,14 @@ Fixpoint union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
   | nil, _ => t2
   | _ ,nil => t1
   | node _ _ _ _ _, node _ l2 k2 vk2 r2 =>
-    let '(l1, b, r1) := UnionDetails.split k2 t1 in
+    let '(l1, b, r1) := split k2 t1 in
     let tl := union l1 l2 in
     let tr := union r1 r2 in
-    (UnionDetails.join k2 vk2 tl tr)
+    (join k2 vk2 tl tr)
   end.
 
 Definition delete {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool) := 
-  let '(l, b, r) := UnionDetails.split k t in
+  let '(l, b, r) := split k t in
   if b then (union l r, true)
   else (t, false).
 
@@ -237,7 +261,6 @@ Fixpoint size {V: Type} (t: rbtree V) : nat :=
   | node _ l _ _ r => (size l) + 1 + (size r)
   end.
 
-Module FoldDetails.
 Fixpoint elements_aux {V : Type} (t : rbtree V) (acc: list (key * V))
   : list (key * V) :=
   match t with
@@ -268,22 +291,20 @@ Fixpoint foldr_aux {V R: Type} (init: R) (f: (key * V) -> R -> R) (k : key) (t: 
   | _,_ => init
   end.
 
-End FoldDetails.
 
 Definition foldr {V R: Type} (init: R) (f: (key * V) -> R -> R) (t: rbtree V) :=
   match min t with
   | Some (fst, fstv) => 
     let fuel := size t in
-    f (fst, fstv) (FoldDetails.foldr_aux init f fst t fuel)
+    f (fst, fstv) (foldr_aux init f fst t fuel)
   | _ => init
   end.
 
 Definition elements {V : Type} (t : rbtree V) : list (key * V) :=
-  FoldDetails.elements_aux t [].
+  elements_aux t [].
 
-Module EqbDetails.
 Fixpoint eqb_aux {V: Type} (k: key) (t1 t2: rbtree V) (fuel: nat) {struct fuel} : bool :=
-  match FoldDetails.next k t1, FoldDetails.next k t2, fuel with
+  match next k t1, next k t2, fuel with
   | Some (nk1, _), Some (nk2, _), S pfuel =>
       if Int.eqb nk1 nk2 then
           eqb_aux nk1 t1 t2 pfuel
@@ -292,13 +313,12 @@ Fixpoint eqb_aux {V: Type} (k: key) (t1 t2: rbtree V) (fuel: nat) {struct fuel} 
   | None, None, O => true  
   | _,_,_ => false 
   end.
-End EqbDetails.
 
 Definition rbtree_eqb {V: Type} (t1 t2: rbtree V) : bool :=
   let fuel := size t1 in
   match min t1, min t2, fuel with
   | Some (k1, _), Some (k2, _), S pfuel => 
-  EqbDetails.eqb_aux k1 t1 t2 pfuel
+  eqb_aux k1 t1 t2 pfuel
   | None, None, O => true 
   | _,_, _ => false 
   end.

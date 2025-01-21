@@ -1,8 +1,6 @@
 
 val add : int -> int -> int
 
-val sub : int -> int -> int
-
 module Nat :
  sig
   val ltb : int -> int -> bool
@@ -40,35 +38,29 @@ module Red_black_tree :
 
   val min : 'a1 rbtree -> (key * 'a1) option
 
-  module BalanceDetails :
-   sig
-    val rot_left : 'a1 rbtree -> 'a1 rbtree
+  val rot_left : 'a1 rbtree -> 'a1 rbtree
 
-    val rot_right : 'a1 rbtree -> 'a1 rbtree
+  val rot_right : 'a1 rbtree -> 'a1 rbtree
 
-    val flip_colors : 'a1 rbtree -> 'a1 rbtree
+  val flip_colors : 'a1 rbtree -> 'a1 rbtree
 
-    val make_black : 'a1 rbtree -> 'a1 rbtree
+  val make_black : 'a1 rbtree -> 'a1 rbtree
 
-    val balance : 'a1 rbtree -> 'a1 rbtree
+  val balance : 'a1 rbtree -> 'a1 rbtree
 
-    val insert_aux : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree
-   end
+  val insert_aux : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree
 
   val insert : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree
 
-  module UnionDetails :
-   sig
-    val black_height : 'a1 rbtree -> int
+  val black_height : 'a1 rbtree -> int
 
-    val join_right : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
+  val join_right : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
 
-    val join_left : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
+  val join_left : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
 
-    val join : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
+  val join : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
 
-    val split : key -> 'a1 rbtree -> ('a1 rbtree * bool) * 'a1 rbtree
-   end
+  val split : key -> 'a1 rbtree -> ('a1 rbtree * bool) * 'a1 rbtree
 
   val union : 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
 
@@ -76,24 +68,18 @@ module Red_black_tree :
 
   val size : 'a1 rbtree -> int
 
-  module FoldDetails :
-   sig
-    val elements_aux : 'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list
+  val elements_aux : 'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list
 
-    val next : key -> 'a1 rbtree -> (key * 'a1) option
+  val next : key -> 'a1 rbtree -> (key * 'a1) option
 
-    val foldr_aux :
-      'a2 -> ((key * 'a1) -> 'a2 -> 'a2) -> key -> 'a1 rbtree -> int -> 'a2
-   end
+  val foldr_aux :
+    'a2 -> ((key * 'a1) -> 'a2 -> 'a2) -> key -> 'a1 rbtree -> int -> 'a2
 
   val foldr : 'a2 -> ((key * 'a1) -> 'a2 -> 'a2) -> 'a1 rbtree -> 'a2
 
   val elements : 'a1 rbtree -> (key * 'a1) list
 
-  module EqbDetails :
-   sig
-    val eqb_aux : key -> 'a1 rbtree -> 'a1 rbtree -> int -> bool
-   end
+  val eqb_aux : key -> 'a1 rbtree -> 'a1 rbtree -> int -> bool
 
   val rbtree_eqb : 'a1 rbtree -> 'a1 rbtree -> bool
  end

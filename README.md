@@ -9,6 +9,7 @@
     - Largest prime factor of given number
 - Lab 2 - Data Structures
     - Binary Tree
+    - Red Black Tree
 
 
 ### Lab 1 - Project Euler
@@ -46,11 +47,16 @@ Supports:
 
 Some prooven theorems:
 
+- `(Red_black_tree, union)` is monoid, with `nil` as neutral. (TODO)
+- `Red_black_tree` has `Binary Search Tree` invariant (TODO)
+- `Red_black_tree` has `Balanced` invariant (TODO)
+
 
 Based on 
 - [Implementation of basic RBtree](https://koerbitz.me/posts/Red-Black-Trees-In-Coq-Part-0.html)
 - [Basic RBtree from book](https://softwarefoundations.cis.upenn.edu/vfa-current/Redblack.html)
 - [Wiki page on RBtrees](https://en.wikipedia.org/wiki/Red%E2%80%93black_tree)
+- [Verified RBtrees](https://www.cs.princeton.edu/~appel/papers/redblack.pdf)
 
 ### Materials
 
