@@ -11,8 +11,9 @@ Module Red_black_tree_proofs.
 
 Module Monoid.
 
+
 Lemma neutral_union_r: forall (V: Type) (t: rbtree V),
- (union t nil) = t.
+  (union t nil) = t.
 Proof.
   intros.
   unfold union.
@@ -21,7 +22,7 @@ Proof.
 Qed.
 
 Lemma neutral_union_l: forall (V: Type) (t: rbtree V),
- (union nil t) = t.
+(union nil t) = t.
 Proof.
   intros.
   unfold union.
@@ -29,41 +30,76 @@ Proof.
   all: reflexivity.
 Qed.
 
+Lemma union_node_nil: forall (V: Type) (l r: rbtree V) (c: color) (k: key) (v: V),
+union (node c l k v r) nil <> nil.
+Proof.
+  intros.
+  unfold union.
+  discriminate.
+Qed.
+
+  
 Lemma union_nil: forall (V: Type) (a b: rbtree V),
   union a b = nil -> a = nil /\ b = nil.
 Proof.
   intros V a b.
-  remember (union a b) as u.
-  destruct u.
-  - intros.
-    split.
-    all: rewrite -> Hequ; unfold union; simpl.
-    Admitted.
-  
+  intros H.
+  destruct a.
+  -- rewrite neutral_union_l in H. auto.
+  -- split.
+  + destruct b.
+  ++ discriminate.
+  ++ Admitted.
+
+
+Lemma union_comm : forall (V: Type) (a b: rbtree V),
+  elements (union a b) = elements (union b a).
+  intros.
+  induction a,b.
+  all: auto.
+  Admitted.
+
+(* Lemma union_node_t: forall (V: Type) (t l r: rbtree V) (c: color) (k: key) (v: V),
+(union (node c l k v r) t) = (insert k v (union l (union t r))).
+Proof. Admitted. *)
+
+Lemma insert_union_node: forall (V: Type) (l r: rbtree V) (c: color) (k: key) (v: V),
+node c l k v r = insert k v (union l r).
+Proof. Admitted.
+
+
+Lemma insert_union_l: forall (V: Type) (l r: rbtree V) (k: key) (v: V),
+union (insert k v l) r = insert k v (union l r).
+Proof. Admitted.
+
+Lemma insert_union_r: forall (V: Type) (l r: rbtree V) (k: key) (v: V),
+union l (insert k v r) = insert k v (union l r).
+Proof. Admitted.
+
+Lemma insert_elements: forall (V: Type) (a b : rbtree V) (k: key) (v: V),
+(elements a) = (elements b) -> elements (insert k v a) = elements (insert k v b).
+Proof. Admitted.
 
 Lemma union_assoc: forall (V: Type) (a b c: rbtree V),
- (union a (union b c)) = (union (union a b) c).
+ elements (union a (union b c))  = elements (union (union a b) c).
  Proof.
   intros.
   induction a.
-  - rewrite neutral_union_l.
-    rewrite neutral_union_l.
-    reflexivity.
-  - remember b as b'. destruct b'.
-    +  auto. rewrite neutral_union_l. reflexivity.
-    + remember c as c'. destruct c'.
-      -- auto. rewrite neutral_union_r. rewrite neutral_union_r. reflexivity.
-      -- auto. 
-          rewrite -> Heqc'. rewrite -> Heqb'.
-          rewrite -> Heqc' in IHa1. rewrite -> Heqc' in IHa2.   
-          rewrite -> Heqb' in IHa1. rewrite -> Heqb' in IHa2.
-         remember (union b c) as u. 
-         destruct u.
-         ++ rewrite neutral_union_r.
-            rewrite neutral_union_r in IHa1.
-            rewrite neutral_union_r in IHa2.
+  - rewrite neutral_union_l. rewrite neutral_union_l. auto.
+  -  rewrite insert_union_node. 
+     rewrite insert_union_l.
+     rewrite insert_union_l. 
+     rewrite insert_union_l.
+     remember (union (union a1 a2) (union b c)) as aa.
+     remember (union (union (union a1 a2) b) c) as bb.
+     rewrite insert_elements with V aa bb k v.
+     -- reflexivity.
+     -- rewrite Heqaa.
+        rewrite Heqbb.
+        remember (union a1 a2) as u.
         Admitted.
-
+        
+ 
 End Monoid.
 
 

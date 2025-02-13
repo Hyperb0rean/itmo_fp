@@ -238,7 +238,7 @@ Fixpoint split {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool * rbtree V) :
   end.
   
 
-Fixpoint union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
+(* Fixpoint union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
   match t1, t2 with
   | nil, nil => nil
   | nil, _ => t2
@@ -248,26 +248,15 @@ Fixpoint union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
     let tl := union l1 l2 in
     let tr := union r1 r2 in
     (join k2 vk2 tl tr)
-  end.
+  end. *)
+  
 
-Definition delete {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool) := 
-  let '(l, b, r) := split k t in
-  if b then (union l r, true)
-  else (t, false).
 
 Fixpoint size {V: Type} (t: rbtree V) : nat :=
   match t with 
   | nil => 0
   | node _ l _ _ r => (size l) + 1 + (size r)
   end.
-
-Fixpoint elements_aux {V : Type} (t : rbtree V) (acc: list (key * V))
-  : list (key * V) :=
-  match t with
-  | nil => acc
-  | node _ l k v r => elements_aux l ((k, v) :: elements_aux r acc)
-  end.
-
 
 Fixpoint next {V: Type} (k: key) (t: rbtree V) : option (key * V) := 
   match t with
@@ -300,6 +289,14 @@ Definition foldr {V R: Type} (init: R) (f: (key * V) -> R -> R) (t: rbtree V) :=
   | _ => init
   end.
 
+Fixpoint elements_aux {V : Type} (t : rbtree V) (acc: list (key * V))
+  : list (key * V) :=
+  match t with
+  | nil => acc
+  | node _ l k v r => elements_aux l ((k, v) :: elements_aux r acc)
+  end.
+
+
 Definition elements {V : Type} (t : rbtree V) : list (key * V) :=
   elements_aux t [].
 
@@ -322,5 +319,28 @@ Definition rbtree_eqb {V: Type} (t1 t2: rbtree V) : bool :=
   | None, None, O => true 
   | _,_, _ => false 
   end.
+
+
+
+Fixpoint union_aux {V:Type} (t1: rbtree V) (el: list (key * V)) : rbtree V :=
+  match el with
+  | [] => t1
+  | (k, v) :: tail => union_aux (insert k v t1) tail
+  end.
+
+
+Definition union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
+    match t1, t2 with
+  | nil, nil => nil
+  | nil, _ => t2
+  | _ ,nil => t1
+  | _, _ => union_aux t1 (elements t2)
+  end.
+
+
+Definition delete {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool) := 
+  let '(l, b, r) := split k t in
+  if b then (union l r, true)
+  else (t, false).
 
 End Red_black_tree.
