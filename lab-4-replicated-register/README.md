@@ -1,6 +1,6 @@
 
 
-### Linearizable Replicated register 
+### Lab 4 - Linearizable Replicated register 
 
 Для работы будет использован фреймоврк [Verdi](https://github.com/uwplse/verdi)
 
