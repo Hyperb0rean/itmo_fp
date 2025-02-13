@@ -479,43 +479,12 @@ module Red_black_tree =
               let l' , b = p in ((join tk vtk l l') , b) , r'
          else (l , true) , r
 
-  (** val union : 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree **)
-
-  let rec union t1 t2 =
-    match t1 with
-    | Coq_nil ->
-      (match t2 with
-       | Coq_nil -> Coq_nil
-       | Coq_node (_, _, _, _, _) -> t2)
-    | Coq_node (_, _, _, _, _) ->
-      (match t2 with
-       | Coq_nil -> t1
-       | Coq_node (_, l2, k2, vk2, r2) ->
-         let p , r1 = split k2 t1 in
-         let l1 , _ = p in
-         let tl = union l1 l2 in let tr = union r1 r2 in join k2 vk2 tl tr)
-
-  (** val delete : key -> 'a1 rbtree -> 'a1 rbtree * bool **)
-
-  let delete k t =
-    let p , r = split k t in
-    let l , b = p in if b then (union l r) , true else t , false
-
   (** val size : 'a1 rbtree -> int **)
 
   let rec size = function
   | Coq_nil -> 0
   | Coq_node (_, l, _, _, r) ->
     add (add (size l) (Stdlib.Int.succ 0)) (size r)
-
-  (** val elements_aux :
-      'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list **)
-
-  let rec elements_aux t acc =
-    match t with
-    | Coq_nil -> acc
-    | Coq_node (_, l, k, v, r) ->
-      elements_aux l ((k , v)::(elements_aux r acc))
 
   (** val next : key -> 'a1 rbtree -> (key * 'a1) option **)
 
@@ -549,6 +518,15 @@ module Red_black_tree =
       let fst , fstv = p in
       let fuel = size t in f (fst , fstv) (foldr_aux init f fst t fuel)
     | None -> init
+
+  (** val elements_aux :
+      'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list **)
+
+  let rec elements_aux t acc =
+    match t with
+    | Coq_nil -> acc
+    | Coq_node (_, l, k, v, r) ->
+      elements_aux l ((k , v)::(elements_aux r acc))
 
   (** val elements : 'a1 rbtree -> (key * 'a1) list **)
 
@@ -601,4 +579,29 @@ module Red_black_tree =
              (fun _ -> true)
              (fun _ -> false)
              fuel)))
+
+  (** val union_aux : 'a1 rbtree -> (key * 'a1) list -> 'a1 rbtree **)
+
+  let rec union_aux t1 = function
+  | [] -> t1
+  | p::tail -> let k , v = p in union_aux (insert k v t1) tail
+
+  (** val union : 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree **)
+
+  let union t1 t2 =
+    match t1 with
+    | Coq_nil ->
+      (match t2 with
+       | Coq_nil -> Coq_nil
+       | Coq_node (_, _, _, _, _) -> t2)
+    | Coq_node (_, _, _, _, _) ->
+      (match t2 with
+       | Coq_nil -> t1
+       | Coq_node (_, _, _, _, _) -> union_aux t1 (elements t2))
+
+  (** val delete : key -> 'a1 rbtree -> 'a1 rbtree * bool **)
+
+  let delete k t =
+    let p , r = split k t in
+    let l , b = p in if b then (union l r) , true else t , false
  end

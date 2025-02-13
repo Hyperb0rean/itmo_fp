@@ -62,13 +62,7 @@ module Red_black_tree :
 
   val split : key -> 'a1 rbtree -> ('a1 rbtree * bool) * 'a1 rbtree
 
-  val union : 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
-
-  val delete : key -> 'a1 rbtree -> 'a1 rbtree * bool
-
   val size : 'a1 rbtree -> int
-
-  val elements_aux : 'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list
 
   val next : key -> 'a1 rbtree -> (key * 'a1) option
 
@@ -77,9 +71,17 @@ module Red_black_tree :
 
   val foldr : 'a2 -> ((key * 'a1) -> 'a2 -> 'a2) -> 'a1 rbtree -> 'a2
 
+  val elements_aux : 'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list
+
   val elements : 'a1 rbtree -> (key * 'a1) list
 
   val eqb_aux : key -> 'a1 rbtree -> 'a1 rbtree -> int -> bool
 
   val rbtree_eqb : 'a1 rbtree -> 'a1 rbtree -> bool
+
+  val union_aux : 'a1 rbtree -> (key * 'a1) list -> 'a1 rbtree
+
+  val union : 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
+
+  val delete : key -> 'a1 rbtree -> 'a1 rbtree * bool
  end
