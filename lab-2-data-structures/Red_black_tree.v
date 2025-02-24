@@ -110,7 +110,6 @@ Definition make_black {V : Type} (t : rbtree V) : rbtree V :=
   | node _ a x vx b => node Black a x vx b
   end.
 
-(* Made this, but was too hard to prove
 Definition balance
            {V : Type} (t : rbtree V) : rbtree V :=
   match t with
@@ -133,12 +132,12 @@ Definition balance
         | _ => t
     end
     end
-  end. *)
+  end.
 
 (*From Software foundations*)
 
 
-Definition balance
+(* Definition balance
            {V : Type} (t : rbtree V) : rbtree V :=
   match t with
   | nil => nil
@@ -159,7 +158,7 @@ Definition balance
                 end
           end
     end
-  end.
+  end. *)
 
 
 Fixpoint insert_aux {V : Type} (x : key) (vx : V) (t : rbtree V) : rbtree V :=
@@ -238,7 +237,7 @@ Fixpoint split {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool * rbtree V) :
   end.
   
 
-(* Fixpoint union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
+Fixpoint union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
   match t1, t2 with
   | nil, nil => nil
   | nil, _ => t2
@@ -248,7 +247,7 @@ Fixpoint split {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool * rbtree V) :
     let tl := union l1 l2 in
     let tr := union r1 r2 in
     (join k2 vk2 tl tr)
-  end. *)
+  end.
   
 
 
@@ -322,19 +321,19 @@ Definition rbtree_eqb {V: Type} (t1 t2: rbtree V) : bool :=
 
 
 
-Fixpoint union_aux {V:Type} (t1: rbtree V) (el: list (key * V)) : rbtree V :=
+Fixpoint slow_union_aux {V:Type} (t1: rbtree V) (el: list (key * V)) : rbtree V :=
   match el with
   | [] => t1
-  | (k, v) :: tail => union_aux (insert k v t1) tail
+  | (k, v) :: tail => slow_union_aux (insert k v t1) tail
   end.
 
 
-Definition union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
+Definition slow_union {V:Type} (t1 t2: rbtree V ) : rbtree V :=
     match t1, t2 with
   | nil, nil => nil
   | nil, _ => t2
   | _ ,nil => t1
-  | _, _ => union_aux t1 (elements t2)
+  | _, _ => slow_union_aux t1 (elements t2)
   end.
 
 

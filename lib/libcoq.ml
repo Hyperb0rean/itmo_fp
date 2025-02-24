@@ -134,238 +134,217 @@ module Red_black_tree =
 
   (** val balance : 'a1 rbtree -> 'a1 rbtree **)
 
-  let balance = function
+  let balance t = match t with
   | Coq_nil -> Coq_nil
   | Coq_node (c, l, k, vk, r) ->
     (match c with
-     | Red -> Coq_node (Red, l, k, vk, r)
+     | Red -> t
      | Black ->
        (match l with
         | Coq_nil ->
           (match r with
-           | Coq_nil -> Coq_node (Black, l, k, vk, r)
-           | Coq_node (c0, b, y, vy, d) ->
+           | Coq_nil -> t
+           | Coq_node (c0, r0, _, _, r1) ->
              (match c0 with
               | Red ->
-                (match b with
+                (match r0 with
                  | Coq_nil ->
-                   (match d with
-                    | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                    | Coq_node (c1, c2, z, vz, d0) ->
+                   (match r1 with
+                    | Coq_nil -> t
+                    | Coq_node (c1, _, _, _, _) ->
                       (match c1 with
-                       | Red ->
-                         Coq_node (Red, (Coq_node (Black, l, k, vk, b)), y,
-                           vy, (Coq_node (Black, c2, z, vz, d0)))
-                       | Black -> Coq_node (Black, l, k, vk, r)))
-                 | Coq_node (c1, b0, y0, vy0, c2) ->
+                       | Red -> flip_colors (make_black (rot_left t))
+                       | Black -> t))
+                 | Coq_node (c1, _, _, _, _) ->
                    (match c1 with
                     | Red ->
-                      Coq_node (Red, (Coq_node (Black, l, k, vk, b0)), y0,
-                        vy0, (Coq_node (Black, c2, y, vy, d)))
+                      let temp_t = Coq_node (Black, l, k, vk, (rot_right r))
+                      in
+                      flip_colors (make_black (rot_left temp_t))
                     | Black ->
-                      (match d with
-                       | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                       | Coq_node (c3, c4, z, vz, d0) ->
-                         (match c3 with
-                          | Red ->
-                            Coq_node (Red, (Coq_node (Black, l, k, vk, b)),
-                              y, vy, (Coq_node (Black, c4, z, vz, d0)))
-                          | Black -> Coq_node (Black, l, k, vk, r)))))
-              | Black -> Coq_node (Black, l, k, vk, r)))
-        | Coq_node (c0, a, x, vx, c1) ->
+                      (match r1 with
+                       | Coq_nil -> t
+                       | Coq_node (c2, _, _, _, _) ->
+                         (match c2 with
+                          | Red -> flip_colors (make_black (rot_left t))
+                          | Black -> t))))
+              | Black -> t))
+        | Coq_node (c0, r0, _, _, r1) ->
           (match c0 with
            | Red ->
-             (match a with
+             (match r0 with
               | Coq_nil ->
-                (match c1 with
+                (match r1 with
                  | Coq_nil ->
                    (match r with
-                    | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                    | Coq_node (c2, b, y, vy, d) ->
-                      (match c2 with
+                    | Coq_nil -> t
+                    | Coq_node (c1, r2, _, _, r3) ->
+                      (match c1 with
                        | Red ->
-                         (match b with
+                         (match r2 with
                           | Coq_nil ->
-                            (match d with
-                             | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                             | Coq_node (c3, c4, z, vz, d0) ->
-                               (match c3 with
-                                | Red ->
-                                  Coq_node (Red, (Coq_node (Black, l, k, vk,
-                                    b)), y, vy, (Coq_node (Black, c4, z, vz,
-                                    d0)))
-                                | Black -> Coq_node (Black, l, k, vk, r)))
-                          | Coq_node (c3, b0, y0, vy0, c4) ->
-                            (match c3 with
+                            (match r3 with
+                             | Coq_nil -> t
+                             | Coq_node (c2, _, _, _, _) ->
+                               (match c2 with
+                                | Red -> flip_colors (make_black (rot_left t))
+                                | Black -> t))
+                          | Coq_node (c2, _, _, _, _) ->
+                            (match c2 with
                              | Red ->
-                               Coq_node (Red, (Coq_node (Black, l, k, vk,
-                                 b0)), y0, vy0, (Coq_node (Black, c4, y, vy,
-                                 d)))
+                               let temp_t = Coq_node (Black, l, k, vk,
+                                 (rot_right r))
+                               in
+                               flip_colors (make_black (rot_left temp_t))
                              | Black ->
-                               (match d with
-                                | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                                | Coq_node (c5, c6, z, vz, d0) ->
-                                  (match c5 with
+                               (match r3 with
+                                | Coq_nil -> t
+                                | Coq_node (c3, _, _, _, _) ->
+                                  (match c3 with
                                    | Red ->
-                                     Coq_node (Red, (Coq_node (Black, l, k,
-                                       vk, b)), y, vy, (Coq_node (Black, c6,
-                                       z, vz, d0)))
-                                   | Black -> Coq_node (Black, l, k, vk, r)))))
-                       | Black -> Coq_node (Black, l, k, vk, r)))
-                 | Coq_node (c2, b, y, vy, c3) ->
-                   (match c2 with
+                                     flip_colors (make_black (rot_left t))
+                                   | Black -> t))))
+                       | Black -> t))
+                 | Coq_node (c1, _, _, _, _) ->
+                   (match c1 with
                     | Red ->
-                      Coq_node (Red, (Coq_node (Black, a, x, vx, b)), y, vy,
-                        (Coq_node (Black, c3, k, vk, r)))
+                      let temp_t = Coq_node (Black, (rot_left l), k, vk, r) in
+                      flip_colors (make_black (rot_right temp_t))
                     | Black ->
                       (match r with
-                       | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                       | Coq_node (c4, b0, y0, vy0, d) ->
-                         (match c4 with
+                       | Coq_nil -> t
+                       | Coq_node (c2, r2, _, _, r3) ->
+                         (match c2 with
                           | Red ->
-                            (match b0 with
+                            (match r2 with
                              | Coq_nil ->
-                               (match d with
-                                | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                                | Coq_node (c5, c6, z, vz, d0) ->
-                                  (match c5 with
+                               (match r3 with
+                                | Coq_nil -> t
+                                | Coq_node (c3, _, _, _, _) ->
+                                  (match c3 with
                                    | Red ->
-                                     Coq_node (Red, (Coq_node (Black, l, k,
-                                       vk, b0)), y0, vy0, (Coq_node (Black,
-                                       c6, z, vz, d0)))
-                                   | Black -> Coq_node (Black, l, k, vk, r)))
-                             | Coq_node (c5, b1, y1, vy1, c6) ->
-                               (match c5 with
+                                     flip_colors (make_black (rot_left t))
+                                   | Black -> t))
+                             | Coq_node (c3, _, _, _, _) ->
+                               (match c3 with
                                 | Red ->
-                                  Coq_node (Red, (Coq_node (Black, l, k, vk,
-                                    b1)), y1, vy1, (Coq_node (Black, c6, y0,
-                                    vy0, d)))
+                                  let temp_t = Coq_node (Black, l, k, vk,
+                                    (rot_right r))
+                                  in
+                                  flip_colors (make_black (rot_left temp_t))
                                 | Black ->
-                                  (match d with
-                                   | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                                   | Coq_node (c7, c8, z, vz, d0) ->
-                                     (match c7 with
+                                  (match r3 with
+                                   | Coq_nil -> t
+                                   | Coq_node (c4, _, _, _, _) ->
+                                     (match c4 with
                                       | Red ->
-                                        Coq_node (Red, (Coq_node (Black, l,
-                                          k, vk, b0)), y0, vy0, (Coq_node
-                                          (Black, c8, z, vz, d0)))
-                                      | Black -> Coq_node (Black, l, k, vk, r)))))
-                          | Black -> Coq_node (Black, l, k, vk, r)))))
-              | Coq_node (c2, a0, x0, vx0, b) ->
-                (match c2 with
-                 | Red ->
-                   Coq_node (Red, (Coq_node (Black, a0, x0, vx0, b)), x, vx,
-                     (Coq_node (Black, c1, k, vk, r)))
+                                        flip_colors (make_black (rot_left t))
+                                      | Black -> t))))
+                          | Black -> t))))
+              | Coq_node (c1, _, _, _, _) ->
+                (match c1 with
+                 | Red -> flip_colors (make_black (rot_right t))
                  | Black ->
-                   (match c1 with
+                   (match r1 with
                     | Coq_nil ->
                       (match r with
-                       | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                       | Coq_node (c3, b0, y, vy, d) ->
-                         (match c3 with
+                       | Coq_nil -> t
+                       | Coq_node (c2, r2, _, _, r3) ->
+                         (match c2 with
                           | Red ->
-                            (match b0 with
+                            (match r2 with
                              | Coq_nil ->
-                               (match d with
-                                | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                                | Coq_node (c4, c5, z, vz, d0) ->
-                                  (match c4 with
+                               (match r3 with
+                                | Coq_nil -> t
+                                | Coq_node (c3, _, _, _, _) ->
+                                  (match c3 with
                                    | Red ->
-                                     Coq_node (Red, (Coq_node (Black, l, k,
-                                       vk, b0)), y, vy, (Coq_node (Black, c5,
-                                       z, vz, d0)))
-                                   | Black -> Coq_node (Black, l, k, vk, r)))
-                             | Coq_node (c4, b1, y0, vy0, c5) ->
-                               (match c4 with
+                                     flip_colors (make_black (rot_left t))
+                                   | Black -> t))
+                             | Coq_node (c3, _, _, _, _) ->
+                               (match c3 with
                                 | Red ->
-                                  Coq_node (Red, (Coq_node (Black, l, k, vk,
-                                    b1)), y0, vy0, (Coq_node (Black, c5, y,
-                                    vy, d)))
+                                  let temp_t = Coq_node (Black, l, k, vk,
+                                    (rot_right r))
+                                  in
+                                  flip_colors (make_black (rot_left temp_t))
                                 | Black ->
-                                  (match d with
-                                   | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                                   | Coq_node (c6, c7, z, vz, d0) ->
-                                     (match c6 with
+                                  (match r3 with
+                                   | Coq_nil -> t
+                                   | Coq_node (c4, _, _, _, _) ->
+                                     (match c4 with
                                       | Red ->
-                                        Coq_node (Red, (Coq_node (Black, l,
-                                          k, vk, b0)), y, vy, (Coq_node
-                                          (Black, c7, z, vz, d0)))
-                                      | Black -> Coq_node (Black, l, k, vk, r)))))
-                          | Black -> Coq_node (Black, l, k, vk, r)))
-                    | Coq_node (c3, b0, y, vy, c4) ->
-                      (match c3 with
+                                        flip_colors (make_black (rot_left t))
+                                      | Black -> t))))
+                          | Black -> t))
+                    | Coq_node (c2, _, _, _, _) ->
+                      (match c2 with
                        | Red ->
-                         Coq_node (Red, (Coq_node (Black, a, x, vx, b0)), y,
-                           vy, (Coq_node (Black, c4, k, vk, r)))
+                         let temp_t = Coq_node (Black, (rot_left l), k, vk, r)
+                         in
+                         flip_colors (make_black (rot_right temp_t))
                        | Black ->
                          (match r with
-                          | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                          | Coq_node (c5, b1, y0, vy0, d) ->
-                            (match c5 with
+                          | Coq_nil -> t
+                          | Coq_node (c3, r2, _, _, r3) ->
+                            (match c3 with
                              | Red ->
-                               (match b1 with
+                               (match r2 with
                                 | Coq_nil ->
-                                  (match d with
-                                   | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                                   | Coq_node (c6, c7, z, vz, d0) ->
-                                     (match c6 with
+                                  (match r3 with
+                                   | Coq_nil -> t
+                                   | Coq_node (c4, _, _, _, _) ->
+                                     (match c4 with
                                       | Red ->
-                                        Coq_node (Red, (Coq_node (Black, l,
-                                          k, vk, b1)), y0, vy0, (Coq_node
-                                          (Black, c7, z, vz, d0)))
-                                      | Black -> Coq_node (Black, l, k, vk, r)))
-                                | Coq_node (c6, b2, y1, vy1, c7) ->
-                                  (match c6 with
+                                        flip_colors (make_black (rot_left t))
+                                      | Black -> t))
+                                | Coq_node (c4, _, _, _, _) ->
+                                  (match c4 with
                                    | Red ->
-                                     Coq_node (Red, (Coq_node (Black, l, k,
-                                       vk, b2)), y1, vy1, (Coq_node (Black,
-                                       c7, y0, vy0, d)))
+                                     let temp_t = Coq_node (Black, l, k, vk,
+                                       (rot_right r))
+                                     in
+                                     flip_colors
+                                       (make_black (rot_left temp_t))
                                    | Black ->
-                                     (match d with
-                                      | Coq_nil ->
-                                        Coq_node (Black, l, k, vk, r)
-                                      | Coq_node (c8, c9, z, vz, d0) ->
-                                        (match c8 with
+                                     (match r3 with
+                                      | Coq_nil -> t
+                                      | Coq_node (c5, _, _, _, _) ->
+                                        (match c5 with
                                          | Red ->
-                                           Coq_node (Red, (Coq_node (Black,
-                                             l, k, vk, b1)), y0, vy0,
-                                             (Coq_node (Black, c9, z, vz,
-                                             d0)))
-                                         | Black ->
-                                           Coq_node (Black, l, k, vk, r)))))
-                             | Black -> Coq_node (Black, l, k, vk, r)))))))
+                                           flip_colors
+                                             (make_black (rot_left t))
+                                         | Black -> t))))
+                             | Black -> t))))))
            | Black ->
              (match r with
-              | Coq_nil -> Coq_node (Black, l, k, vk, r)
-              | Coq_node (c2, b, y, vy, d) ->
-                (match c2 with
+              | Coq_nil -> t
+              | Coq_node (c1, r2, _, _, r3) ->
+                (match c1 with
                  | Red ->
-                   (match b with
+                   (match r2 with
                     | Coq_nil ->
-                      (match d with
-                       | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                       | Coq_node (c3, c4, z, vz, d0) ->
-                         (match c3 with
-                          | Red ->
-                            Coq_node (Red, (Coq_node (Black, l, k, vk, b)),
-                              y, vy, (Coq_node (Black, c4, z, vz, d0)))
-                          | Black -> Coq_node (Black, l, k, vk, r)))
-                    | Coq_node (c3, b0, y0, vy0, c4) ->
-                      (match c3 with
+                      (match r3 with
+                       | Coq_nil -> t
+                       | Coq_node (c2, _, _, _, _) ->
+                         (match c2 with
+                          | Red -> flip_colors (make_black (rot_left t))
+                          | Black -> t))
+                    | Coq_node (c2, _, _, _, _) ->
+                      (match c2 with
                        | Red ->
-                         Coq_node (Red, (Coq_node (Black, l, k, vk, b0)), y0,
-                           vy0, (Coq_node (Black, c4, y, vy, d)))
+                         let temp_t = Coq_node (Black, l, k, vk,
+                           (rot_right r))
+                         in
+                         flip_colors (make_black (rot_left temp_t))
                        | Black ->
-                         (match d with
-                          | Coq_nil -> Coq_node (Black, l, k, vk, r)
-                          | Coq_node (c5, c6, z, vz, d0) ->
-                            (match c5 with
-                             | Red ->
-                               Coq_node (Red, (Coq_node (Black, l, k, vk,
-                                 b)), y, vy, (Coq_node (Black, c6, z, vz,
-                                 d0)))
-                             | Black -> Coq_node (Black, l, k, vk, r)))))
-                 | Black -> Coq_node (Black, l, k, vk, r))))))
+                         (match r3 with
+                          | Coq_nil -> t
+                          | Coq_node (c3, _, _, _, _) ->
+                            (match c3 with
+                             | Red -> flip_colors (make_black (rot_left t))
+                             | Black -> t))))
+                 | Black -> t)))))
 
   (** val insert_aux : key -> 'a1 -> 'a1 rbtree -> 'a1 rbtree **)
 
@@ -479,6 +458,22 @@ module Red_black_tree =
               let l' , b = p in ((join tk vtk l l') , b) , r'
          else (l , true) , r
 
+  (** val union : 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree **)
+
+  let rec union t1 t2 =
+    match t1 with
+    | Coq_nil ->
+      (match t2 with
+       | Coq_nil -> Coq_nil
+       | Coq_node (_, _, _, _, _) -> t2)
+    | Coq_node (_, _, _, _, _) ->
+      (match t2 with
+       | Coq_nil -> t1
+       | Coq_node (_, l2, k2, vk2, r2) ->
+         let p , r1 = split k2 t1 in
+         let l1 , _ = p in
+         let tl = union l1 l2 in let tr = union r1 r2 in join k2 vk2 tl tr)
+
   (** val size : 'a1 rbtree -> int **)
 
   let rec size = function
@@ -580,15 +575,15 @@ module Red_black_tree =
              (fun _ -> false)
              fuel)))
 
-  (** val union_aux : 'a1 rbtree -> (key * 'a1) list -> 'a1 rbtree **)
+  (** val slow_union_aux : 'a1 rbtree -> (key * 'a1) list -> 'a1 rbtree **)
 
-  let rec union_aux t1 = function
+  let rec slow_union_aux t1 = function
   | [] -> t1
-  | p::tail -> let k , v = p in union_aux (insert k v t1) tail
+  | p::tail -> let k , v = p in slow_union_aux (insert k v t1) tail
 
-  (** val union : 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree **)
+  (** val slow_union : 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree **)
 
-  let union t1 t2 =
+  let slow_union t1 t2 =
     match t1 with
     | Coq_nil ->
       (match t2 with
@@ -597,7 +592,7 @@ module Red_black_tree =
     | Coq_node (_, _, _, _, _) ->
       (match t2 with
        | Coq_nil -> t1
-       | Coq_node (_, _, _, _, _) -> union_aux t1 (elements t2))
+       | Coq_node (_, _, _, _, _) -> slow_union_aux t1 (elements t2))
 
   (** val delete : key -> 'a1 rbtree -> 'a1 rbtree * bool **)
 

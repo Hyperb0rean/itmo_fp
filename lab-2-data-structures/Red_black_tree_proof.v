@@ -1,6 +1,7 @@
 Require Import DataStructures.Int.
 Require Import DataStructures.Red_black_tree.
 Import Red_black_tree.
+Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Lia.
 
 
@@ -37,87 +38,70 @@ Proof.
   discriminate.
 Qed.
   
-Lemma union_nil: forall (V: Type) (a b: rbtree V),
-  union a b = nil -> a = nil /\ b = nil.
-Proof.
-  intros V a b.
-  intros H.
-  destruct a.
-  -- rewrite neutral_union_l in H. auto.
-  -- split.
-  + destruct b.
-  ++ discriminate.
-  ++ Admitted.
 
-Lemma union_comm : forall (V: Type) (a b: rbtree V),
-  elements (union a b) = elements (union b a).
-  intros.
-  induction a,b.
-  all: auto.
-  Admitted.
-
-Lemma insert_union_node: forall (V: Type) (l r: rbtree V) (c: color) (k: key) (v: V),
-node c l k v r = insert k v (union l r).
-Proof. Admitted.
-
-Lemma insert_union_l: forall (V: Type) (l r: rbtree V) (k: key) (v: V),
-union (insert k v l) r = insert k v (union l r).
-Proof. Admitted.
-
-Lemma insert_union_r: forall (V: Type) (l r: rbtree V) (k: key) (v: V),
-union l (insert k v r) = insert k v (union l r).
-Proof. Admitted.
-
-Lemma elements_nil: forall (V: Type) (t: rbtree V),
-  elements t  = elements nil -> t = nil.
-Proof.
-  intros V t.
-  unfold elements.
-  unfold elements_aux.
-  Admitted.
-
-
-
-Lemma insert_elements: forall (V: Type) (a b : rbtree V) (k: key) (v: V),
-(elements a) = (elements b) -> elements (insert k v a) = elements (insert k v b).
-Proof.
-  intros V a b k v.
-  destruct a, b.
-  - auto. 
-  - intros H. 
-    remember  (node c b1 k0 v0 b2) as t.
-    rewrite elements_nil with V t.
-    all: auto.
-  - intros H. 
-    remember  (node c a1 k0 v0 a2) as t.
-    rewrite elements_nil with V t.
-    all: auto.
-  - intros H.
-    remember  (node c a1 k0 v0 a2) as aa.
-    remember  (node c0 b1 k1 v1 b2) as bb.
-    Admitted.
-
-
-Lemma union_assoc: forall (V: Type) (a b c: rbtree V),
- elements (union a (union b c))  = elements (union (union a b) c).
- Proof.
-  intros.
-  generalize dependent a.
-  generalize dependent c.
-  induction b .
-  -  intros. rewrite neutral_union_l. rewrite neutral_union_r. auto.
-  -  rewrite insert_union_node. 
-     (* remember (union (union a1 a2) (union b c)) as aa.
-     remember (union (union (union a1 a2) b) c) as bb.
-     rewrite insert_elements with V aa bb k v.
-     -- reflexivity.
-     -- rewrite Heqaa.
-        rewrite Heqbb.
-        remember (union a1 a2) as u. *)
-        Admitted.
-        
- 
 End Monoid.
+
+Lemma rot_right_nil : forall {V : Type} (t : rbtree V),
+  t <> nil -> rot_right t <> nil.
+Proof.
+  intros. destruct t; auto.
+  unfold rot_right.
+  repeat
+    match goal with
+    | |- match ?t with nil => _ | node _ _ _ _ _ => _ end <> _ => destruct t
+    | |- node _ _ _ _ _ <> nil => discriminate
+    end.
+Qed.
+
+Lemma rot_left_nil : forall {V : Type} (t : rbtree V),
+  t <> nil -> rot_left t <> nil.
+Proof.
+  intros. destruct t; auto.
+  unfold rot_left.
+  repeat
+    match goal with
+    | |- match ?t with nil => _ | node _ _ _ _ _ => _ end <> _ => destruct t
+    | |- node _ _ _ _ _ <> nil => discriminate
+    end.
+Qed.
+
+Lemma make_black_nil : forall {V : Type} (t : rbtree V),
+  t <> nil -> make_black t <> nil.
+Proof.
+  intros. destruct t; auto.
+  unfold make_black.
+  discriminate.
+Qed.
+
+Lemma flip_colors_nil : forall {V : Type} (t : rbtree V),
+  t <> nil -> flip_colors t <> nil.
+Proof.
+  intros. destruct t; auto.
+  unfold flip_colors.
+  repeat
+    match goal with
+    | |- match ?t with nil => _ | node _ _ _ _ _ => _ end <> _ => destruct t
+    | |- node _ _ _ _ _ <> nil => discriminate
+    | |- match ?c with Red => _ | Black => _ end <> _=> destruct c
+    end.
+Qed.
+
+Lemma insert_aux_not_nil : forall {V : Type} (k : key) (v : V) (t : rbtree V),
+    insert_aux k v t <> nil.
+Proof.
+  intros. destruct t; simpl.
+  - discriminate.
+  - unfold balance.
+    repeat
+      match goal with
+      | |- (if ?x then _ else _) <> _ => destruct x
+      | |- match ?c with Red => _ | Black => _ end <> _=> destruct c
+      | |- match ?t with nil => _ | node _ _ _ _ _ => _ end <> _ => destruct t
+      | |- node _ _ _ _ _ <> nil => discriminate
+      | |- flip_colors  _ <> nil => apply flip_colors_nil
+      | |- make_black  _ <> nil => apply make_black_nil
+      end.
+Qed.
 
 
 Fixpoint ForallT {V : Type} (P: int -> V -> Prop) (t : rbtree V) : Prop :=
@@ -141,48 +125,99 @@ Proof.
   unfold mk_nil. constructor.
 Qed.
 
-Theorem balance_BST: forall (V: Type) (t: rbtree V),
-  BST t -> BST (balance t).
-Proof.
-  intros. 
-  unfold balance.
-    repeat match goal with
-  | |- BST (match ?t with nil => _ | node _ _ _ _ _ => _ end) => destruct t
-  | |- BST (match ?c with | Red => _ | Black => _ end) => destruct c
-  | |- BST _ => constructor
-    end; auto; try lia.
-  - inversion H. auto.
-  Admitted.
+Ltac unfold_tree := match goal with
+| H: ForallT _ (node _ _ _ _ _) |- _ => destruct H as [? [? ?] ]
+| H: BST (node _ _ _ _ _) |- _ => inversion H; clear H; subst
+| |- BST (node _ _ _ _ _) => constructor
+| |- BST (match ?c with Red => _ | Black => _ end) => destruct c
+| |- BST (match ?t with nil => _ | node _ _ _ _ _ => _ end) => destruct t
+| |- ForallT _ _ => repeat split
+end; auto; try lia.
 
-Lemma nilP: forall (V : Type) (P : key -> V -> Prop),
-    ForallT P nil.
+Lemma flip_colors_BST: forall {V: Type} (t: rbtree V),
+  BST t -> BST (flip_colors t).
 Proof.
-  intros.
-  unfold ForallT.
-  reflexivity.
+  intros. unfold flip_colors.
+  repeat unfold_tree.
 Qed.
 
-(* Lemma balanceP : forall (V : Type) (P : key -> V -> Prop) 
-        (c : color) (l r : rbtree V)
-                   (k : key) (v : V),
-    ForallT P l ->
-    ForallT P r ->
-    P k v ->
-    ForallT P (balance (node c l k v r)).
+Lemma make_black_BST: forall {V: Type} (t: rbtree V),
+  BST t -> BST (make_black t).
 Proof.
-  intros. 
-  unfold balance.
-   unfold balance.
-  repeat match goal with
-  | |- ForallT P (match ?t with nil => _ | node _ _ _ _ _ => _ end) => destruct t
-  | |- ForallT P (match ?c with | Red => _ | Black => _ end) => destruct c
-  | H: ForallT P (node _ _ _ _ _) |- _ => destruct H; auto
-  | |- ForallT P (node _ _ _ _ _) /\ ForallT P (node _ _ _ _ _) => split
-  | H: ForallT P _ /\ ForallT P _ |- _ => repeat destruct H; auto
-  end; auto.
+  intros. unfold make_black. 
+  destruct t. auto.
+  inversion H. clear H. subst.
+  constructor; auto.
+Qed.
 
-  Qed. *)
+Search (_ > _ -> _ < _). 
 
-  
+Lemma ForallT_ex_imp {V: Type} (P Q: int -> V -> Prop) (t: rbtree V):
+  (forall k v, P k v -> Q k v) -> ForallT P t -> ForallT Q t.
+Proof.
+  intros H HForall.
+  induction t as [ | c l IHl k v r IHr]; auto.  
+  simpl in HForall. simpl.
+  destruct HForall as [HP [Hl Hr]].
+  repeat split; auto. 
+Qed.
+
+Lemma ForallT_gt {V: Type} (t : rbtree V) (k k0 : key):
+  mk_z k > mk_z k0 ->
+  ForallT (fun k' _ => mk_z k' > mk_z k) t->
+  ForallT (fun k' _ => mk_z k' > mk_z k0) t.
+Proof.
+  intros. eapply ForallT_ex_imp; eauto.
+  intros. simpl in H1. lia.
+Qed.
+
+
+Lemma ForallT_lt {V: Type} (t : rbtree V) (k k0 : key):
+  mk_z k < mk_z k0 ->
+  ForallT (fun k' _ => mk_z k' < mk_z k) t->
+  ForallT (fun k' _ => mk_z k' < mk_z k0) t.
+Proof.
+  intros. eapply ForallT_ex_imp; eauto.
+  intros. simpl in H1. lia.
+Qed.
+
+Lemma rot_left_BST:  forall {V: Type} (t: rbtree V),
+BST t -> BST (rot_left t).
+Proof.
+  intros. unfold rot_left.
+  repeat unfold_tree.
+  apply Z.gt_lt in H.
+  apply ForallT_lt with k; auto.
+Qed.
+
+Lemma rot_right_BST:  forall {V: Type} (t: rbtree V),
+BST t -> BST (rot_right t).
+Proof.
+  intros. unfold rot_right.
+  repeat unfold_tree.
+  apply Z.lt_gt in H.
+  apply ForallT_gt with k; auto.
+Qed.
+
+   
+Theorem balance_BST: forall {V : Type} (t : rbtree V),
+    BST t -> BST (balance t).
+Proof.
+  intros. destruct t; unfold balance; auto.
+  repeat
+    match goal with
+    | |- _ => unfold_tree
+    | |- _ => apply flip_colors_BST
+    | |- _ => apply make_black_BST
+    | |- _ => apply rot_left_BST
+    | |- _ => apply rot_right_BST
+    end;
+    auto; try lia.
+Qed.
+
+
+
+
+
 
 End Red_black_tree_proofs.
