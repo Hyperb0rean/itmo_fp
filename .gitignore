@@ -9,4 +9,5 @@
 *.opam
 _build
 *.vscode
-.lia-cache
+*.lia.cache
+.lia.cache

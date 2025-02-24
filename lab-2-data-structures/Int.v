@@ -12,11 +12,15 @@ Axiom mk_z_inj: forall (n m : int), mk_z n = mk_z m -> n = m.
 Parameter ltb: int -> int -> bool.
 Extract Inlined Constant ltb => "( < )".
 Axiom ltb_lt : forall (n m : int), ltb n m = true <-> mk_z n < mk_z m.
+Axiom ltb_f_lt : forall (n m : int), ltb n m = false <-> mk_z m <= mk_z n.
+
 
 
 Parameter leb: int -> int -> bool.
 Extract Inlined Constant leb => "( <= )".
 Axiom leb_le : forall (n m : int), leb n m = true <-> mk_z n <= mk_z m.
+Axiom leb_f_le : forall (n m : int), leb n m = false <-> mk_z m < mk_z n.
+
 
 Parameter eqb: int -> int -> bool .
 Extract Inlined Constant eqb => "( == )".
