@@ -58,6 +58,13 @@ module Red_black_tree =
   let mk_nil =
     Coq_nil
 
+  (** val bound : key -> 'a1 rbtree -> bool **)
+
+  let rec bound x = function
+  | Coq_nil -> false
+  | Coq_node (_, l, k, _, r) ->
+    if ( < ) x k then bound x l else if ( < ) k x then bound x r else true
+
   (** val lookup : key -> 'a1 rbtree -> 'a1 option **)
 
   let rec lookup x = function

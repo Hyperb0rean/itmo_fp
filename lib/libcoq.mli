@@ -32,6 +32,8 @@ module Red_black_tree :
 
   val mk_nil : 'a1 rbtree
 
+  val bound : key -> 'a1 rbtree -> bool
+
   val lookup : key -> 'a1 rbtree -> 'a1 option
 
   val max : 'a1 rbtree -> (key * 'a1) option

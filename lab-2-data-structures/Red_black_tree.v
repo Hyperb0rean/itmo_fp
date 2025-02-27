@@ -21,6 +21,14 @@ Arguments node {V}.
 Definition mk_nil {V: Type} : rbtree V :=
   nil.
 
+Fixpoint bound {V : Type} (x: key) (t : rbtree V) : bool :=
+  match t with
+  | nil => false
+  | node _ l k v r => if Int.ltb x k then bound x l
+                    else if Int.ltb k x then bound x r
+                         else true
+  end.
+
 Fixpoint lookup {V : Type} (x: key) (t : rbtree V) : option V :=
   match t with
   | nil => None
@@ -288,16 +296,23 @@ Definition foldr {V R: Type} (init: R) (f: (key * V) -> R -> R) (t: rbtree V) :=
   | _ => init
   end.
 
-Fixpoint elements_aux {V : Type} (t : rbtree V) (acc: list (key * V))
+Fixpoint fast_elements_aux {V : Type} (t : rbtree V) (acc: list (key * V))
   : list (key * V) :=
   match t with
   | nil => acc
-  | node _ l k v r => elements_aux l ((k, v) :: elements_aux r acc)
+  | node _ l k v r => fast_elements_aux l ((k, v) :: fast_elements_aux r acc)
   end.
 
 
-Definition elements {V : Type} (t : rbtree V) : list (key * V) :=
-  elements_aux t [].
+Definition fast_elements {V : Type} (t : rbtree V) : list (key * V) :=
+fast_elements_aux t [].
+
+
+Fixpoint elements {V : Type} (t : rbtree V) : list (key*V) :=
+  match t with
+  | nil => []
+  | node c l k v r => elements l ++ [(k, v)] ++ elements r
+  end.
 
 Fixpoint eqb_aux {V: Type} (k: key) (t1 t2: rbtree V) (fuel: nat) {struct fuel} : bool :=
   match next k t1, next k t2, fuel with

@@ -4,13 +4,11 @@ Import Red_black_tree.
 Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Lia.
 
-
 Require Import ZArith.
 Open Scope Z_scope.
 
-Module Red_black_tree_proofs.
+Module Red_black_tree_proof.
 
-Module Monoid.
 
 Lemma neutral_union_r: forall (V: Type) (t: rbtree V),
   (union t nil) = t.
@@ -38,8 +36,6 @@ Proof.
   discriminate.
 Qed.
   
-
-End Monoid.
 
 Lemma rot_right_nil : forall {V : Type} (t : rbtree V),
   t <> nil -> rot_right t <> nil.
@@ -285,22 +281,22 @@ Proof.
   unfold insert_aux.
   generalize dependent k. 
   generalize dependent v. 
-  induction t as [| c l IHl ko vo r IHr].
+  induction t as [| c l IHl k0 v0 r IHr].
   - simpl. repeat constructor; auto.
   - inversion H; clear H; subst.
     intros.
-    destruct (ltb k ko) eqn: Hlt.
-    all: destruct (ltb ko k) eqn: Hgt.
+    destruct (ltb k k0) eqn: Hlt.
+    all: destruct (ltb k0 k) eqn: Hgt.
     all: try apply balance_BST; constructor; try apply insert_auxP; auto.
     +  apply ltb_lt in Hlt, Hgt; lia.
     +  apply ltb_lt in Hlt; auto.
     +  apply ltb_lt in Hgt; lia.
     +  apply ltb_f_lt in Hlt, Hgt.
-      apply ForallT_ex_imp with (fun (k' : int) (_ : V) => mk_z k' < mk_z ko).
+      apply ForallT_ex_imp with (fun (k' : int) (_ : V) => mk_z k' < mk_z k0).
       -- intros. lia.
       -- exact H4.
     + apply ltb_f_lt in Hlt, Hgt.
-      apply ForallT_ex_imp with (fun (k' : int) (_ : V) => mk_z k' > mk_z ko).
+      apply ForallT_ex_imp with (fun (k' : int) (_ : V) => mk_z k' > mk_z k0).
       -- intros. lia.
       -- exact H6.
 Qed.
@@ -313,5 +309,4 @@ Proof.
 Qed.
 
 
-
-End Red_black_tree_proofs.
+End Red_black_tree_proof.
