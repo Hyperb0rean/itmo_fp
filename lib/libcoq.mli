@@ -1,4 +1,6 @@
 
+val app : 'a1 list -> 'a1 list -> 'a1 list
+
 val add : int -> int -> int
 
 module Nat :
@@ -75,7 +77,9 @@ module Red_black_tree :
 
   val foldr : 'a2 -> ((key * 'a1) -> 'a2 -> 'a2) -> 'a1 rbtree -> 'a2
 
-  val elements_aux : 'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list
+  val fast_elements_aux : 'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list
+
+  val fast_elements : 'a1 rbtree -> (key * 'a1) list
 
   val elements : 'a1 rbtree -> (key * 'a1) list
 

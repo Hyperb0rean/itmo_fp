@@ -1,4 +1,11 @@
 
+(** val app : 'a1 list -> 'a1 list -> 'a1 list **)
+
+let rec app l m =
+  match l with
+  | [] -> m
+  | a::l1 -> a::(app l1 m)
+
 (** val add : int -> int -> int **)
 
 let rec add = (+)
@@ -521,19 +528,26 @@ module Red_black_tree =
       let fuel = size t in f (fst , fstv) (foldr_aux init f fst t fuel)
     | None -> init
 
-  (** val elements_aux :
+  (** val fast_elements_aux :
       'a1 rbtree -> (key * 'a1) list -> (key * 'a1) list **)
 
-  let rec elements_aux t acc =
+  let rec fast_elements_aux t acc =
     match t with
     | Coq_nil -> acc
     | Coq_node (_, l, k, v, r) ->
-      elements_aux l ((k , v)::(elements_aux r acc))
+      fast_elements_aux l ((k , v)::(fast_elements_aux r acc))
+
+  (** val fast_elements : 'a1 rbtree -> (key * 'a1) list **)
+
+  let fast_elements t =
+    fast_elements_aux t []
 
   (** val elements : 'a1 rbtree -> (key * 'a1) list **)
 
-  let elements t =
-    elements_aux t []
+  let rec elements = function
+  | Coq_nil -> []
+  | Coq_node (_, l, k, v, r) ->
+    app (elements l) (app ((k , v)::[]) (elements r))
 
   (** val eqb_aux : key -> 'a1 rbtree -> 'a1 rbtree -> int -> bool **)
 
