@@ -20,7 +20,7 @@ Search ((_, _) = (_, _)).
 
 Search incl.
 
-Lemma elemets_complete {V: Type} (k: key) (v: V) (t: rbtree V) :
+Theorem elemets_complete {V: Type} (k: key) (v: V) (t: rbtree V) :
   lookup k t = Some v -> In (k,v) (elements t).
 Proof.
     unfold elements. 
@@ -89,7 +89,7 @@ Proof.
   apply H.
 Qed.
      
-Lemma elemets_correct {V: Type}:
+Theorem elemets_correct {V: Type}:
   forall  (t: rbtree V) (k: key) (v: V),
   BST t -> In (k, v) (elements t) -> lookup k t = Some v.
 Proof.
@@ -143,6 +143,7 @@ Proof.
          BinInt.Z.gt (mk_z y) (mk_z k)) r k k v in H.
          lia. exact H5. 
 Qed.
+
 
 
 End BST_list_proofs.

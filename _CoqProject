@@ -9,6 +9,7 @@
 -Q ./lab-2-data-structures DataStructures
 
 ./lab-2-data-structures/Int.v
+./lab-2-data-structures/Sorted.v
 ./lab-2-data-structures/BST_list_proof.v
 ./lab-2-data-structures/Red_black_tree.v
 ./lab-2-data-structures/Red_black_tree_proof.v
