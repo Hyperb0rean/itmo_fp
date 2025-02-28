@@ -1,18 +1,13 @@
 -Q . Itmo
 
--Q ./lab-1-project-euler ProjectEuler
 
-./lab-1-project-euler/Largest_palindrome.v
-./lab-1-project-euler/Largest_prime_factor.v
+-Q ./theories DataStructures
 
-
--Q ./lab-2-data-structures DataStructures
-
-./lab-2-data-structures/Int.v
-./lab-2-data-structures/Sorted.v
-./lab-2-data-structures/BST_list_proof.v
-./lab-2-data-structures/Red_black_tree.v
-./lab-2-data-structures/Red_black_tree_proof.v
+./theories/Int.v
+./theories/Sorted.v
+./theories/BST_list_proof.v
+./theories/Red_black_tree.v
+./theories/Red_black_tree_proof.v
 
 
 -Q ./lib Lib
