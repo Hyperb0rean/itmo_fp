@@ -1,14 +1,12 @@
-
-
-Require Import DataStructures.Int.
-Require Import DataStructures.Red_black_tree.
-Require Import DataStructures.Red_black_tree_proof.
+Require Import Rbtree.Int.
+Require Import Rbtree.Red_black_tree.
+Require Import Rbtree.Red_black_tree_proof.
 Import Red_black_tree.
+Import Red_black_tree_proof.
 Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Lia.
 Require Import List.
 Import ListNotations.
-Import Red_black_tree_proof.
 
 Module BST_list_proofs.
 

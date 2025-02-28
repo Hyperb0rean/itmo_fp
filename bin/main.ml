@@ -1,4 +1,4 @@
-open Itmo_fp.Libcoq.Red_black_tree
+open Rbtree.Libcoq.Red_black_tree
 
 let print_pair (a, b) = Printf.printf "(%d, %s) " a b
 

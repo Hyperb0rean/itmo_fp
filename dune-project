@@ -1,11 +1,13 @@
 (lang dune 3.16)
 
-(name itmo_fp)
+(using coq 0.9)
+
+(name rbtree)
 
 (generate_opam_files true)
 
 (source
- (github hyperb0rean/itmo_fp))
+ (github hyperb0rean/rbtree))
 
 (authors "hyperb0rean")
 
@@ -13,14 +15,10 @@
 
 (license LICENSE)
 
-(documentation https://url/to/documentation)
-
 (package
- (name itmo_fp)
- (synopsis "A short synopsis")
- (description "A longer description")
+ (name rbtree)
+ (synopsis "Verified rbtree")
+ (description "see README.md")
  (depends ocaml dune)
  (tags
   (topics "to describe" your project)))
-
-; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html

@@ -1,5 +1,5 @@
-Require Import DataStructures.Int.
-Require Import DataStructures.Red_black_tree.
+Require Import Rbtree.Int.
+Require Import Rbtree.Red_black_tree.
 Import Red_black_tree.
 Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Lia.

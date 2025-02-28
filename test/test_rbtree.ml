@@ -1,4 +1,4 @@
-open Itmo_fp.Libcoq.Red_black_tree
+open Rbtree.Libcoq.Red_black_tree
 
 let elem_eq a b =
   let k1, _ = a in

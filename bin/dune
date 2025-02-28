@@ -1,4 +1,4 @@
 (executable
  (public_name playground)
  (name main)
- (libraries itmo_fp))
+ (libraries rbtree))

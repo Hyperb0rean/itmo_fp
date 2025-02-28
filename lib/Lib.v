@@ -1,4 +1,4 @@
-Require Import DataStructures.Red_black_tree.
+Require Import Rbtree.Red_black_tree.
 
 Require Extraction.
 

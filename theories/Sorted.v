@@ -2,7 +2,7 @@
 Require Import Lia.
 Require Import List.
 Import ListNotations.
-Require Import DataStructures.Int.
+Require Import Rbtree.Int.
 Require Import ZArith.
 Open Scope Z_scope.
 

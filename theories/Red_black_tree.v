@@ -1,8 +1,9 @@
 Require Import ZArith.
 Require Import Coq.Lists.List.
+Require Import Rbtree.Int.
+
 Import ListNotations.
 
-Require Import DataStructures.Int.
 
 Module Red_black_tree.
 

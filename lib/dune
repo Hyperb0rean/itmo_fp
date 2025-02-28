@@ -1,6 +1,6 @@
 (library
- (name itmo_fp)
- (public_name itmo_fp))
+ (name rbtree)
+ (public_name rbtree))
 
 (env
  (dev

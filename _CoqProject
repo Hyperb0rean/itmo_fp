@@ -1,15 +1,11 @@
--Q . Itmo
+-Q theories Rbtree
 
+theories/Int.v
+theories/Sorted.v
+theories/BST_list_proof.v
+theories/Red_black_tree.v
+theories/Red_black_tree_proof.v
 
--Q ./theories DataStructures
+-Q lib Lib
 
-./theories/Int.v
-./theories/Sorted.v
-./theories/BST_list_proof.v
-./theories/Red_black_tree.v
-./theories/Red_black_tree_proof.v
-
-
--Q ./lib Lib
-
-./lib/Lib.v
+lib/Lib.v
