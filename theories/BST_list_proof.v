@@ -1,8 +1,10 @@
 Require Import Rbtree.Int.
+Require Import Rbtree.Sorted.
 Require Import Rbtree.Red_black_tree.
 Require Import Rbtree.Red_black_tree_proof.
 Import Red_black_tree.
 Import Red_black_tree_proof.
+Import Sorted.
 Require Import Coq.Logic.FunctionalExtensionality.
 Require Import Lia.
 Require Import List.
@@ -68,7 +70,6 @@ Proof.
   apply IHl in Hl.
   apply IHr in Hr.
   apply Forall_app. split; auto.
-  apply Forall_cons; auto.
 Qed.
 
 Search In (_ ++ _ ).
@@ -143,5 +144,38 @@ Proof.
 Qed.
 
 
+Theorem sorted_elements  {V : Type} (t : rbtree V):
+    BST t -> sorted (elements t).
+Proof.
+  intros.
+  unfold elements.
+  induction t.
+  - constructor.
+  - inversion H. clear H. subst.
+    apply IHt2 in H8; clear IHt2.
+    apply IHt1 in H7; clear IHt1.
+    apply elements_forall in H4.
+    apply elements_forall in H6.
+    unfold elements in H4, H6.
+    remember ((fix elements
+    (V : Type) (t : rbtree V) {struct t} :
+    list (key * V) :=
+    match t with
+    | Red_black_tree.nil => []
+    | node _ l k v r =>
+    elements V l ++ (k, v) :: elements V r
+    end) V t1).
+    remember ((fix elements
+    (V0 : Type) (t : rbtree V0) {struct t} :
+    list (key * V0) :=
+    match t with
+    | Red_black_tree.nil => []
+    | node _ l0 k0 v0 r =>
+    elements V0 l0 ++
+    (k0, v0) :: elements V0 r
+    end) V t2).
+    unfold list_keys.
+    apply sorted_app; auto.
+Qed.
 
 End BST_list_proofs.

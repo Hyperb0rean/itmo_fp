@@ -312,7 +312,7 @@ fast_elements_aux t [].
 Fixpoint elements {V : Type} (t : rbtree V) : list (key*V) :=
   match t with
   | nil => []
-  | node c l k v r => elements l ++ [(k, v)] ++ elements r
+  | node c l k v r => elements l ++ (k, v) :: elements r
   end.
 
 Fixpoint eqb_aux {V: Type} (k: key) (t1 t2: rbtree V) (fuel: nat) {struct fuel} : bool :=
@@ -357,5 +357,10 @@ Definition delete {V: Type} (k: key) (t: rbtree V) : (rbtree V * bool) :=
   let '(l, b, r) := split k t in
   if b then (union l r, true)
   else (t, false).
+
+      
+Definition list_keys {V : Type} (lst : list (key * V)) :=
+  map fst lst.
+              
 
 End Red_black_tree.
