@@ -76,49 +76,35 @@ Lemma merge_sorted {V: Type} :
         sorted_keys l1 -> sorted_keys l2 -> sorted_keys (merge l1 l2).
       intros l1 l2 Hl1 Hl2.
       unfold merge.
-      induction Hl1 as [ | x | x y l Hxy Hsorted IHl1];
+      generalize dependent l2.
+      induction Hl1 as [ | x | x y l Hxy Hsorted IHl1]; intros;
         induction Hl2 as [ | y' | y' z l' Hzy' Hsorted' IHl2];
         simpl; try constructor; auto.
-      -  simpl.
-        destruct  (Int.leb x y') eqn: Hlt.
-        + constructor; try apply leb_le; auto. constructor.
-        + constructor. apply Int.leb_f_le in Hlt. lia. constructor.
-      - simpl; auto.
-        destruct (Int.leb x y') eqn: Hlt.
-        + constructor; try apply leb_le; auto. 
-          constructor; try apply leb_le; auto. apply leb_le. lia.
-        + destruct (Int.leb x z) eqn:Hlt2.
-        -- constructor; try apply leb_f_le in Hlt; auto. lia.
-        -- constructor. try apply leb_f_le in Hlt; auto. 
-           auto.
-      - destruct (Int.leb x y') eqn: Hlt.
-        + destruct (Int.leb y y') eqn: Hlt2.
-        all: constructor. try lia; auto.
-        ++ destruct (Int.leb y y'); auto.
-        ++ apply leb_le. auto.
-        ++ auto.
-        +  destruct (Int.leb y y'); auto.
-        ++ constructor; apply leb_f_le in Hlt. 
-        +++ lia.
-        +++ constructor; auto.
-        ++ constructor.
-        +++ apply leb_f_le in Hlt. lia.
-        +++ constructor; auto.     
-    - destruct (Int.leb x y') eqn: Hlt; auto.
-      all: destruct (Int.leb y z) eqn: Hlt3; auto.
-      all: destruct (Int.leb x z) eqn: Hlt4; auto.
-      all: destruct (Int.leb y y') eqn: Hlt2; auto.
-      all: try constructor; try lia; auto.
-      all: try apply leb_le; auto.
-      all: try constructor.
-      repeat match goal with 
-      | H : Int.leb _ _ = true |- _ => apply leb_le in H
-      | H : Int.leb _ _ = false |- _ => apply leb_f_le in H
-      | |- Int.leb _ _ = true => apply leb_le
-      | |- Int.leb _ _ = false => apply leb_f_le
-      end; try lia; auto.
-      all: auto.
-Admitted. 
+        all: try destruct (Int.leb x y') eqn: Hlt; auto.
+        all: try destruct (Int.leb x z) eqn: Hlt2; auto.
+        all: try destruct (Int.leb y z) eqn: Hlt3; auto.
+        all: try destruct (Int.leb y y') eqn: Hlt4; auto.
+        repeat match goal with 
+        | H : Int.leb _ _ = true |- mk_z _ <= mk_z _ => apply leb_le in H; lia
+        | H : Int.leb _ _ = false |- mk_z _ <= mk_z _ => apply leb_f_le in H; lia
+        end; auto.
+Admitted.
 
+
+Lemma merge_assoc: forall (a b c: list int),
+sorted_keys a -> sorted_keys b -> sorted_keys c
+-> (merge a (merge b c)) = (merge (merge a b) c).
+Proof.
+    intros a b c Ha Hb Hc. 
+    induction Ha as [ | x | x x' a Hx Hx' IHHa];
+    induction Hb as [ | y | y y' b Hy Hy' IHHb];
+    induction Hc as [ | z | z z' c Hz Hz' IHHc]; simpl; auto.
+    all: try destruct (Int.leb x y) eqn:Hxy;
+         try destruct (Int.leb y z) eqn:Hyz;
+         try destruct (Int.leb x z) eqn:Hxz; auto; simpl.
+    repeat match goal with
+    | H: Int.leb _ _ |- if (Int.leb _ _) then _ else _ => apply h
+    end.
+Admitted.
 
 End Sorted.

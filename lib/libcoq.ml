@@ -1,4 +1,9 @@
 
+(** val fst : ('a1 * 'a2) -> 'a1 **)
+
+let fst = function
+| x , _ -> x
+
 (** val app : 'a1 list -> 'a1 list -> 'a1 list **)
 
 let rec app l m =
@@ -17,6 +22,12 @@ module Nat =
   let ltb n m =
     (<=) (Stdlib.Int.succ n) m
  end
+
+(** val map : ('a1 -> 'a2) -> 'a1 list -> 'a2 list **)
+
+let rec map f = function
+| [] -> []
+| a::t -> (f a)::(map f t)
 
 module Red_black_tree =
  struct
@@ -524,8 +535,8 @@ module Red_black_tree =
   let foldr init f t =
     match min t with
     | Some p ->
-      let fst , fstv = p in
-      let fuel = size t in f (fst , fstv) (foldr_aux init f fst t fuel)
+      let fst0 , fstv = p in
+      let fuel = size t in f (fst0 , fstv) (foldr_aux init f fst0 t fuel)
     | None -> init
 
   (** val fast_elements_aux :
@@ -546,8 +557,7 @@ module Red_black_tree =
 
   let rec elements = function
   | Coq_nil -> []
-  | Coq_node (_, l, k, v, r) ->
-    app (elements l) (app ((k , v)::[]) (elements r))
+  | Coq_node (_, l, k, v, r) -> app (elements l) ((k , v)::(elements r))
 
   (** val eqb_aux : key -> 'a1 rbtree -> 'a1 rbtree -> int -> bool **)
 
@@ -620,4 +630,9 @@ module Red_black_tree =
   let delete k t =
     let p , r = split k t in
     let l , b = p in if b then (union l r) , true else t , false
+
+  (** val list_keys : (key * 'a1) list -> key list **)
+
+  let list_keys lst =
+    map fst lst
  end

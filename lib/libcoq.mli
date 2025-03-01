@@ -1,4 +1,6 @@
 
+val fst : ('a1 * 'a2) -> 'a1
+
 val app : 'a1 list -> 'a1 list -> 'a1 list
 
 val add : int -> int -> int
@@ -7,6 +9,8 @@ module Nat :
  sig
   val ltb : int -> int -> bool
  end
+
+val map : ('a1 -> 'a2) -> 'a1 list -> 'a2 list
 
 module Red_black_tree :
  sig
@@ -92,4 +96,6 @@ module Red_black_tree :
   val slow_union : 'a1 rbtree -> 'a1 rbtree -> 'a1 rbtree
 
   val delete : key -> 'a1 rbtree -> 'a1 rbtree * bool
+
+  val list_keys : (key * 'a1) list -> key list
  end
