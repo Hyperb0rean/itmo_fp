@@ -53,5 +53,72 @@ Proof.
     -- constructor; auto.
 Qed.
 
+Inductive sorted_keys : list int -> Prop :=
+    | sorted_keys_nil :
+        sorted_keys []
+    | sorted_keys_1 : forall x,
+        sorted_keys [x]
+    | sorted_keys_cons : forall x y l,
+        mk_z x <= mk_z y -> sorted_keys (y :: l) -> sorted_keys (x :: y :: l).
+
+Fixpoint merge l1 l2 {struct l1} :=
+  let fix merge_aux l2 :=
+  match l1, l2 with
+  | [], _ => l2
+  | _, [] => l1
+  | a1::l1', a2::l2' =>
+      if Int.leb a1 a2 then a1 :: merge l1' l2 else a2 :: merge_aux l2'
+  end
+  in merge_aux l2.
+
+Lemma merge_sorted {V: Type} :
+    forall (l1 l2: list int),
+        sorted_keys l1 -> sorted_keys l2 -> sorted_keys (merge l1 l2).
+      intros l1 l2 Hl1 Hl2.
+      unfold merge.
+      induction Hl1 as [ | x | x y l Hxy Hsorted IHl1];
+        induction Hl2 as [ | y' | y' z l' Hzy' Hsorted' IHl2];
+        simpl; try constructor; auto.
+      -  simpl.
+        destruct  (Int.leb x y') eqn: Hlt.
+        + constructor; try apply leb_le; auto. constructor.
+        + constructor. apply Int.leb_f_le in Hlt. lia. constructor.
+      - simpl; auto.
+        destruct (Int.leb x y') eqn: Hlt.
+        + constructor; try apply leb_le; auto. 
+          constructor; try apply leb_le; auto. apply leb_le. lia.
+        + destruct (Int.leb x z) eqn:Hlt2.
+        -- constructor; try apply leb_f_le in Hlt; auto. lia.
+        -- constructor. try apply leb_f_le in Hlt; auto. 
+           auto.
+      - destruct (Int.leb x y') eqn: Hlt.
+        + destruct (Int.leb y y') eqn: Hlt2.
+        all: constructor. try lia; auto.
+        ++ destruct (Int.leb y y'); auto.
+        ++ apply leb_le. auto.
+        ++ auto.
+        +  destruct (Int.leb y y'); auto.
+        ++ constructor; apply leb_f_le in Hlt. 
+        +++ lia.
+        +++ constructor; auto.
+        ++ constructor.
+        +++ apply leb_f_le in Hlt. lia.
+        +++ constructor; auto.     
+    - destruct (Int.leb x y') eqn: Hlt; auto.
+      all: destruct (Int.leb y z) eqn: Hlt3; auto.
+      all: destruct (Int.leb x z) eqn: Hlt4; auto.
+      all: destruct (Int.leb y y') eqn: Hlt2; auto.
+      all: try constructor; try lia; auto.
+      all: try apply leb_le; auto.
+      all: try constructor.
+      repeat match goal with 
+      | H : Int.leb _ _ = true |- _ => apply leb_le in H
+      | H : Int.leb _ _ = false |- _ => apply leb_f_le in H
+      | |- Int.leb _ _ = true => apply leb_le
+      | |- Int.leb _ _ = false => apply leb_f_le
+      end; try lia; auto.
+      all: auto.
+Admitted. 
+
 
 End Sorted.
