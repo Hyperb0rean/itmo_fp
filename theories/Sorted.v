@@ -99,12 +99,18 @@ Proof.
     induction Ha as [ | x | x x' a Hx Hx' IHHa];
     induction Hb as [ | y | y y' b Hy Hy' IHHb];
     induction Hc as [ | z | z z' c Hz Hz' IHHc]; simpl; auto.
-    all: try destruct (Int.leb x y) eqn:Hxy;
+    all: try destruct (Int.leb x y) eqn:Hxy; 
          try destruct (Int.leb y z) eqn:Hyz;
-         try destruct (Int.leb x z) eqn:Hxz; auto; simpl.
+         try destruct (Int.leb x z) eqn:Hxz;
+         try lia; auto; simpl.
+    all: try rewrite Hxy; 
+         try rewrite Hyz; 
+         try rewrite Hxz; try lia.
     repeat match goal with
-    | H: Int.leb _ _ |- if (Int.leb _ _) then _ else _ => apply h
+    | H: _ |- if _ then _ else _ => apply H
     end.
+    all: try reflexivity.
+    (* all: contradict Int.leb_trans. *)
 Admitted.
 
 End Sorted.
