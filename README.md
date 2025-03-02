@@ -1,10 +1,4 @@
-# ITMO_FP
-
-Сосновцев Григорий Алексеевич P34102
-
-### Lab 2 - Data Structures
-
-Implemented Red Black Tree in Coq
+## Verified Red Black Tree
 
 Supports:
 
@@ -19,7 +13,9 @@ Supports:
 
 Some prooven theorems:
 
-- `Red_black_tree` has `Binary Search Tree` invariant 
+- `Red_black_tree` preserves `Binary Search Tree` invariant on `nil` and inserts
+- `elements` prooven correct and complete
+- `elements` has `sorted` invariant
 - `Red_black_tree` has `Balanced` invariant (TODO)
 
 
